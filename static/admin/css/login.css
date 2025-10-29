@@ -1,0 +1,101 @@
+/* LOGIN FORM */
+
+.login {
+    /* Background: var(--darkened-bg) -> #000000 */
+    background: #000000;
+    height: auto;
+}
+
+.login #header {
+    /* Header Background: Using a dark background for contrast against text */
+    background: #3D0000;
+    height: auto;
+    padding: 15px 16px;
+    justify-content: center;
+}
+
+.login #header h1 {
+    /* Header H1 Text: Near-white/light for contrast */
+    color: #EEEEEE; /* Assuming light text is needed */
+    font-size: 1.125rem;
+    margin: 0;
+}
+
+.login #header h1 a {
+    /* Header Link Color: var(--header-link-color) -> #FF0000 (Bright Red) */
+    color: #FF0000;
+}
+
+.login #content {
+    padding: 20px;
+}
+
+.login #container {
+    /* Container Background: var(--body-bg) -> #3D0000 */
+    background: #3D0000;
+    /* Border: var(--hairline-color) -> #950101 (Muted Red) */
+    border: 1px solid #950101;
+    border-radius: 4px;
+    overflow: hidden;
+    width: 28em;
+    min-width: 300px;
+    margin: 100px auto;
+    height: auto;
+}
+
+.login .form-row {
+    padding: 4px 0;
+    /* Label Text Color: Assuming light text for visibility on dark background */
+    color: #EEEEEE; 
+}
+
+.login .form-row label {
+    display: block;
+    line-height: 2em;
+}
+
+.login .form-row #id_username, .login .form-row #id_password {
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    /* Input Fields: Dark background, light text */
+    background: #000000;
+    color: #EEEEEE;
+    border: 1px solid #444444; /* Dark gray border for definition */
+}
+
+.login .submit-row {
+    padding: 1em 0 0 0;
+    margin: 0;
+    text-align: center;
+}
+
+/* Submit Button Styling */
+.login .submit-row input[type="submit"] {
+    /* Button BG: Bright Red */
+    background: #FF0000;
+    /* Button Text: Black/Dark for maximum contrast */
+    color: #000000; 
+    font-weight: bold;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.login .submit-row input[type="submit"]:hover {
+    /* Hover effect: Slightly darker red or a muted red */
+    background: #950101;
+    color: #EEEEEE; /* Light text on hover */
+}
+
+.login .password-reset-link {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.login .password-reset-link a {
+    /* Link Color: Bright Red */
+    color: #FF0000;
+}

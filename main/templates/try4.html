@@ -1,0 +1,461 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ about_info.name|default:"Ajit Chauhan" }}{% endblock %}</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="{% static 'css/portfolio_css.css' %}">
+    
+    <script src="{% static 'js/gsap.min.js' %}"></script>
+    <script src="{% static 'js/three.min.js' %}"></script>
+    <script src="{% static 'js/feather.min.js' %}"></script>
+    
+    <script src="{% static 'js/highcharts/highcharts.js' %}"></script>
+    <script src="{% static 'js/highcharts/highcharts-more.js' %}"></script>
+    <script src="{% static 'js/highcharts/modules/exporting.js' %}"></script>
+    <script src="{% static 'js/highcharts/modules/accessibility.js' %}"></script>
+    
+    <script src="{% static 'js/particles.min.js' %}"></script>
+    
+</head>
+<body>
+    <div id="particles-js" class="fixed top-0 left-0 w-full h-full z-0"></div>
+
+    <div class="relative z-10"> 
+        
+        {% block content %}
+        
+        {% for about_info in about_data %}
+        <section id="hero" class="section flex items-center relative active h-full"> 
+    <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center h-full fix-flicker"> 
+        <div class="text-center md:text-left order-2 md:order-1 flex flex-col justify-center">
+            
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 text-[#111111]">Hello, I'm <span class="text-[#FFB534]">{{ about_info.name }}</span></h1>
+            
+            <p class="text-xl md:text-2xl mb-8 max-w-2xl text-[#111111]/80 mx-auto md:mx-0">
+                Aspiring Data Scientist 
+            </p>
+            
+            <div class="flex justify-center md:justify-start space-x-4">
+    <a href="#projects" class="px-6 py-3 bg-[#65B741] hover:bg-[#FFB534] rounded-full text-[#1D1616] font-medium transition-all" 
+        id="explore-btn"
+    >Explore My Journey</a>
+
+    <a href="{{ about_info.resume_pdf.url }}" 
+        class="px-6 py-3 bg-[#C1F2B0] hover:bg-[#FFB534] rounded-full text-[#1D1616] font-medium transition-all " 
+        id="resume-btn"
+        target="_blank"  
+    >My Resume</a> 
+</div>
+        </div>
+
+        <div class="flex justify-center md:justify-end md:items-stretch order-1 md:order-2 h-full"> 
+            <div class="relative w-full h-full flex justify-center items-center"> 
+                {% if about_info.profile_photo %}
+                <img 
+                    src="{{ about_info.profile_photo.url }}" 
+                    alt="{{ about_info.name }}" 
+                    class="w-full h-full object-cover relative z-10" 
+                    id="ajit-photo" 
+                    style="border: none; border-radius: 0;"
+                >
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="absolute bottom-10 left-0 right-0 text-center animate-bounce hidden" id="scroll-indicator">
+        <i data-feather="chevron-down" class="text-[#111111] w-8 h-8"></i>
+    </div>
+</section>
+        {% endfor %}
+        
+<section id="projects" class="section py-20">
+    <div class="container mx-auto px-6">
+        {# Change header color to match the new pink theme #}
+        <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-pink-400">
+            My <span class="text-pink-600">Projects</span>
+        </h2>
+        
+        {% if project %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for p in project %}
+    {# Change card background, text, and shadow color for the new theme #}
+    <div class="bg-[#474056] rounded-xl p-6 shadow-xl hover:shadow-2xl hover:shadow-[#D81B60]/50 transition-all duration-300 transform hover:-translate-y-1">
+        
+        {# Inner element background color and border color change #}
+        <div class="bg-[#090C08] rounded-lg h-48 mb-4 flex items-center justify-center overflow-hidden border border-[#D81B60]/70">
+            {% if p.project_photo %}
+                <img src="{{ p.project_photo.url }}" alt="{{ p.project_name }} image" class="w-full h-full object-cover">
+            {% else %}
+                {# Fallback icon color change #}
+                <i data-feather="monitor" class="w-16 h-16 text-[#D81B60]"></i>
+            {% endif %}
+        </div>
+        
+        {# Project name text color - kept white/light for contrast #}
+        <h3 class="text-xl font-bold mb-2 text-white">{{ p.project_name }}</h3>
+        
+        {# Description text color - light shade of the background color for subtle look #}
+        <p class="text-gray-300/70 mb-4">{{ p.description|truncatechars:100 }}</p>
+        
+        <div class="flex space-x-3 mt-4">
+            {% if p.github_link %}
+            {# Link button style changes: dark background, primary accent icon, primary accent hover effect #}
+            <a href="{{ p.github_link }}" target="_blank" class="w-10 h-10 rounded-full bg-[#090C08] flex items-center justify-center border border-[#D81B60]/70 hover:bg-[#D81B60]/20 transition-colors" title="GitHub Repository">
+                <i data-feather="github" class="w-5 h-5 text-[#D81B60]"></i>
+            </a>
+            {% endif %}
+            
+            {% if p.live_link %}
+            {# Link button style changes: dark background, primary accent icon, primary accent hover effect #}
+            <a href="{{ p.live_link }}" target="_blank" class="w-10 h-10 rounded-full bg-[#090C08] flex items-center justify-center border border-[#D81B60]/70 hover:bg-[#D81B60]/20 transition-colors" title="View Live Site">
+                <i data-feather="external-link" class="w-5 h-5 text-[#D81B60]"></i>
+            </a>
+            {% endif %}
+            
+            {% comment %} Display Related Blog Links with Icon and button styling {% endcomment %}
+            {% for post in p.related_posts.all %} 
+            {# Link button style changes: dark background, primary accent icon, primary accent hover effect #}
+            <a href="{{ post.get_absolute_url }}" 
+                target="_blank" 
+                title="Blog Post: {{ post.title }}" 
+                class="w-10 h-10 rounded-full bg-[#090C08] flex items-center justify-center border border-[#D81B60]/70 hover:bg-[#D81B60]/20 transition-colors" >
+                <i data-feather="file-text" class="w-5 h-5 text-[#D81B60]"></i>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+        {% else %}
+        <p class="text-center text-pink-400/80">No projects found for this user.</p>
+        {% endif %}
+    </div>
+</section>
+       <section id="experience" class="section py-20" >
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-[#DBE2EF]">Testing <span class="text-[#3F72AF]">Phase</span></h2>
+        
+        {% if experience %}
+        <div class="max-w-3xl mx-auto">
+            <div class="relative">
+                <div class="border-l-2 border-[#3F72AF] absolute h-full left-4 md:left-1/2 -translate-x-1/2"></div>
+                
+                {% for exp in experience %}
+                <div class="mb-12 relative pl-10 md:pl-0 md:flex {% if forloop.counter0|divisibleby:2 %}md:flex-row-reverse{% endif %}">
+                    
+                    <div class="md:w-1/2 md:px-8 {% if forloop.counter0|divisibleby:2 %}md:ml-auto{% endif %}">
+                        <div class="bg-[#112D4E] p-6 rounded-lg shadow-xl relative border border-[#3F72AF]/50">
+                            
+                            <div class="absolute -left-4 md:left-auto w-8 h-8 rounded-full bg-[#3F72AF] border-4 border-[#112D4E] flex items-center justify-center 
+                                {% if forloop.counter0|divisibleby:2 %}
+                                    md:-right-4 
+                                {% else %}
+                                    md:right-[calc(93%+24px)] md:translate-x-1/2 
+                                {% endif %} 
+                                ">
+                                <i data-feather="briefcase" class="w-4 h-4 text-white"></i>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold mb-2 text-[#F9F7F7]">{{ exp.job_title }}</h3>
+                            
+                            <h4 class="text-[#DBE2EF] mb-2">{{ exp.company_name }}</h4>
+                            
+                            <p class="text-[#DBE2EF] text-sm mb-2">
+                                {{ exp.start_month }} 
+                                {% if exp.start_year %}{{ exp.start_year }}{% endif %}
+                                {% if exp.start_month == exp.end_month and exp.start_year == exp.end_year %}
+                                    {% else %}
+                                    - 
+                                    {% if exp.end_year or exp.end_month %}
+                                        {{ exp.end_month }} {% if exp.end_year %}{{ exp.end_year }}{% endif %}
+                                    {% else %}
+                                        Present
+                                    {% endif %}
+                                {% endif %}
+                            </p>
+                            
+                            <p class="text-[#DBE2EF]">{{ exp.description }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center text-[#DBE2EF]">No experience records found.</p>
+        {% endif %}
+    </div>
+</section>
+        
+        <section id="education" class="section py-20">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-[#EAEAEA]">Training <span class="text-[#FF2E63]">Phase</span></h2>
+        
+        {% if education %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            
+            {% for edu in education %}
+            <div class="bg-[rgba(37,42,52,0.8)] rounded-xl p-8 shadow-lg border border-[#08D9D6]/30">
+                <div class="flex items-start mb-4">
+                    
+                    <div class="w-16 h-16 rounded-full bg-[#08D9D6]/20 flex items-center justify-center mr-4 flex-shrink-0">
+                        {% if edu.logo %}
+                            <img src="{{ edu.logo.url }}" alt="{{ edu.institute }} Logo" class="w-full h-full object-contain p-1">
+                        {% else %}
+                            <i data-feather="book-open" class="w-8 h-8 text-[#08D9D6]"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold text-[#EAEAEA]">{{ edu.degree }}</h3>
+                        
+                        <p class="text-[#08D9D6]">{{ edu.institute }}</p>
+                        
+                        <p class="text-[#EAEAEA]/80 text-sm mt-1">
+                            {% if edu.start_year %}{{ edu.start_year }}{% endif %}
+                            {% if edu.start_year and edu.end_year %} - {% endif %}
+                            {% if edu.end_year and edu.start_year != edu.end_year %}{{ edu.end_year }}{% endif %}
+                            {% if not edu.start_year and not edu.end_year %}Ongoing{% endif %}
+                        </p>
+                    </div>
+                </div>
+                <p class="text-[#EAEAEA]">{{ edu.description }}</p>
+            </div>
+            {% endfor %}
+            
+        </div>
+        {% else %}
+        <p class="text-center text-[#EAEAEA]/80">No education records found.</p>
+        {% endif %}
+    </div>
+</section>
+        
+        <section id="skills" class="section py-10 ">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-amber-200">Skills <span class="text-amber-400">Visualization</span></h2>
+                <div id="container"></div>
+                
+                <script>
+                    const dynamicSkillData = {{ highcharts_series_json | safe }};
+                    // Highcharts initialization logic
+                    Highcharts.chart('container', {
+                        exporting: { enabled: false },
+                        chart: { type: 'packedbubble', height: '80%', backgroundColor: 'transparent', style: { color: '#E0E0E0' } },
+                        title: { text: 'Core Technology Skills', style: { color: '#FFFFFF' } },
+                        tooltip: { useHTML: true, backgroundColor: 'rgba(33, 33, 33, 0.85)', style: { color: '#FFFFFF' }, pointFormat: '<b>{point.name}:</b> {point.value}% Proficiency' },
+                        plotOptions: {
+                            packedbubble: {
+                                layoutAlgorithm: { splitSeries: true, gravitationalConstant: 0.05 },
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '{point.name}',
+                                    filter: { property: 'value', operator: '>', value: 20 },
+                                    style: { color: '#FFFFFF', textOutline: '1px solid #000000', fontWeight: 'bold' }
+                                }
+                            }
+                        },
+                        series: dynamicSkillData
+                    });
+                </script>
+            </div>
+        </section>
+        
+<section id="blog" class="section py-20">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-[#414141]">My <span class="text-[#FF0000]">Blog</span></h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for post in posts|slice:":3" %}
+            <article class="blog-post bg-[rgba(37,37,37,0.8)] rounded-xl overflow-hidden shadow-lg hover:shadow-[#FF0000]/40 transition-all">
+                <div class="h-48 bg-[#414141] flex items-center justify-center"><i data-feather="book" class="w-16 h-16 text-[#FF0000]"></i></div>
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-white mb-3">
+                        <span class="mr-4"><strong class="text-[#FF0000]">{% for category in post.categories.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% empty %}Uncategorized{% endfor %}</strong></span>
+                        <span class="mx-2">•</span>
+                        <span>{{ post.date|date:"M d, Y" }}</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">{{ post.title }}</h3>
+                    <p class="text-white mb-4">{{ post.summary }}</p>
+                    <a href="{% url 'blog_detail' slug=post.slug %}" class="text-[#FF0000] hover:text-[#AF0404] flex items-center text-sm">Read Article <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i></a>
+                </div>
+            </article>
+            {% empty %}
+            <div class="md:col-span-3 text-center p-12 bg-[rgba(37,37,37,0.8)] rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold text-white mb-2">No wisdom yet. Check back soon for new articles!</h2>
+                <p class="text-[#414141]">Looks like I'm busy coding! New content is on the way.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="{% url 'blog' %}" class="inline-flex items-center px-6 py-3 border border-[#AF0404] rounded-full text-[#FF0000] hover:bg-[#AF0404] hover:text-white transition-all">
+                View All Articles <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
+            </a>
+        </div>
+    </div>
+</section>
+        
+        <section id="contact" class="section py-20" >
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-[#111111]">Let's <span class="text-[#BEAEE2]">Connect</span></h2>
+        
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+            
+            <div>
+                <h3 class="text-2xl font-bold mb-6 text-[#111111]">Send Me a Message</h3>
+                
+                <form method="post" class="space-y-6" action="{% url 'portfolio_view' %}#contact">
+                    {% csrf_token %}
+                    
+                    {% if messages %}
+                        <ul class="space-y-2">
+                    {% for message in messages %}
+                        <li class="p-3 rounded-lg text-sm {% if message.tags == 'success' %}bg-green-600 text-white{% else %}bg-red-600 text-white{% endif %}">
+                            {{ message }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <div><label for="{{ contact_form.name.id_for_label }}" class="block text-sm font-medium text-[#111111] mb-2">Your Name</label>{{ contact_form.name }}</div>
+                    <div><label for="{{ contact_form.email.id_for_label }}" class="block text-sm font-medium text-[#111111] mb-2">Your Email</label>{{ contact_form.email }}</div>
+                    <div><label for="{{ contact_form.message.id_for_label }}" class="block text-sm font-medium text-[#111111] mb-2">Your Message</label>{{ contact_form.message }}</div>
+
+                    <button type="submit" class="w-full bg-[#CDF0EA] hover:bg-[#BEAEE2] text-[#111111] font-medium py-3 px-6 rounded-lg transition-all">
+                        <span class="flex items-center justify-center">Send Message <i data-feather="send" class="ml-2 w-4 h-4"></i></span>
+                    </button>
+                    
+                </form>
+            </div>
+            
+            <div>
+                <h3 class="text-2xl font-bold mb-6 text-[#111111]">Contact Information</h3>
+                
+                <div class="space-y-6">
+                    
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-[#BEAEE2]/40 flex items-center justify-center mr-4 mt-1"><i data-feather="mail" class="w-5 h-5 text-[#111111]"></i></div>
+                        <div>
+                            <h4 class="text-lg font-bold text-[#111111] mb-1">Email</h4>
+                            {% if about_info.email %}
+                                <a href="mailto:{{ about_info.email }}" class="text-[#111111]/80 hover:text-[#BEAEE2] transition-colors">{{ about_info.email }}</a>
+                            {% else %}
+                                <p class="text-[#111111]/80">Email not set</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-[#BEAEE2]/40 flex items-center justify-center mr-4 mt-1"><i data-feather="map-pin" class="w-5 h-5 text-[#111111]"></i></div>
+                        <div>
+                            <h4 class="text-lg font-bold text-[#111111] mb-1">Location</h4>
+                            {% if about_info.address %}
+                                <p class="text-[#111111]/80">{{ about_info.address }}</p>
+                            {% else %}
+                                <p class="text-[#111111]/80">Address not set</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="pt-6">
+                        <h4 class="text-lg font-bold text-[#111111] mb-4">Follow My Journey</h4>
+                        <div class="flex space-x-4">
+                            {% for link in socialLinkz %}
+                            <a href="{{ link.url }}" target="_blank" class="w-10 h-10 rounded-full bg-[#BEAEE2]/40 flex items-center justify-center hover:bg-[#BEAEE2]/80 transition-colors" title="{{ link.platform_name }}">
+                                <i data-feather="{{ link.icon_name }}" class="w-5 h-5 text-[#111111]"></i>
+                            </a>
+                            {% endfor %}
+                            
+                            {% if not socialLinkz %}
+                                <p class="text-[#111111]/60 text-sm">No social links set.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+        
+        {% endblock content %}
+        
+    </div>
+    
+   <footer class="py-12 border-t border-[#8E1616]" style="background-color: #1D1616;">
+    <div class="container mx-auto px-6 text-center">
+        <div class="flex justify-center mb-6">
+            
+            <a href="#hero" class="w-12 h-12 rounded-full bg-[#8E1616]/20 flex items-center justify-center mx-2 hover:bg-[#8E1616]/40 transition-colors">
+                <i data-feather="home" class="w-5 h-5 text-[#D84040]"></i>
+            </a>
+            <a href="#projects" class="w-12 h-12 rounded-full bg-[#8E1616]/20 flex items-center justify-center mx-2 hover:bg-[#8E1616]/40 transition-colors">
+                <i data-feather="briefcase" class="w-5 h-5 text-[#D84040]"></i>
+            </a>
+            <a href="#experience" class="w-12 h-12 rounded-full bg-[#8E1616]/20 flex items-center justify-center mx-2 hover:bg-[#8E1616]/40 transition-colors">
+                <i data-feather="award" class="w-5 h-5 text-[#D84040]"></i>
+            </a>
+            <a href="#contact" class="w-12 h-12 rounded-full bg-[#8E1616]/20 flex items-center justify-center mx-2 hover:bg-[#8E1616]/40 transition-colors">
+                <i data-feather="mail" class="w-5 h-5 text-[#D84040]"></i>
+            </a>
+            
+        </div>
+        <p class="text-[#D84040] mb-4">May all beings be happy</p>
+        
+        <p class="text-[#EEEEEE] text-sm">© 2025 Ajit Chauhan Portfolio. All rights reserved.</p>
+    </div>
+</footer>
+    
+    <nav class="fixed bottom-8 left-0 right-0 z-50 transition-all duration-500 opacity-0 invisible" id="main-nav">
+    <div class="container mx-auto px-6">
+        <div class="max-w-xs mx-auto bg-[#222831]/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
+            <div class="flex justify-between">
+                
+                <a href="#hero" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                    text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Home">
+                   <i data-feather="home" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#projects" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                    text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Projects">
+                   <i data-feather="briefcase" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#experience" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                    text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Experience">
+                   <i data-feather="award" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#education" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                    text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Education">
+                   <i data-feather="book" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#skills" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                    text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Skills">
+                   <i data-feather="zap" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#blog" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                    text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Blog">
+                   <i data-feather="edit" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#contact" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                    text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Contact">
+                   <i data-feather="mail" class="w-5 h-5"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script src="{% static 'js/portfolio_js.js' %}"></script>
+</body>
+</html>

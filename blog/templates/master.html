@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ajit blog{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+
+    <style>
+        /* Custom style to ensure the main content is not hidden by the fixed sidebar on large screens */
+        @media (min-width: 1024px) {
+            .blog-list {
+                padding-left: 340px; /* Adjust this value to be slightly more than the sidebar width (w-80 = 320px) */
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#F5F5F5] text-[#3F2305]">
+
+    <div class="flex flex-col lg:flex-row p-0 lg:p-0"> 
+    {% block nav %}
+        <aside class="
+            lg:fixed lg:top-0 lg:left-0 
+            w-full lg:w-80 
+            bg-[#F5F5F5] p-6 
+            rounded-none lg:shadow-xl 
+            mb-8 lg:mb-0 
+            lg:h-screen lg:overflow-y-auto
+        ">
+            
+            <div class="site-header mb-6">
+                
+                <div class="profilepic flex justify-center mb-4">
+                    <img src="{{ about.profile_photo.url }}" alt="{{ about.name }} Profile" 
+                            class="w-32 h-32 rounded-full object-cover shadow-xl border-4 border-[#3F2305]">
+                </div>
+
+                <div class="text-center">
+                    <a class="text-3xl font-extrabold text-[#3F2305] hover:text-[#3F2305]/80 transition-colors" rel="author" href="/">
+                        {{ about.name|default:"Ajit Chauhan" }}
+                    </a>
+                    <div class="text-sm text-[#3F2305]/60 italic mt-1">
+                        {{ about.tagline|default:"// Developer | Dreamer | Creator //" }}
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="site-nav border-t border-b border-[#DFD7BF] py-4 mb-4">
+                <ul class="list-none p-0 space-y-2">
+                    
+                    <li>
+                        <a href="{% url 'about' %}" 
+                            class="page-link font-semibold text-lg block transition duration-150
+                            {% if request.path == '/blog/about/' or request.path == '/blog/about' %}
+                                text-[#3F2305] hover:text-[#3F2305]/80
+                            {% else %}
+                                text-[#3F2305] hover:text-[#3F2305]/80
+                            {% endif %}"
+                        >About Me</a>
+                    </li>
+                    
+                    <li>
+                        <a href="{% url 'archive' %}"
+                            class="page-link font-semibold text-lg block transition duration-150
+                            {% if request.path == '/blog/archive/' or request.path == '/blog/archive' %}
+                                text-[#3F2305] hover:text-[#3F2305]/80
+                            {% else %}
+                                text-[#3F2305] hover:text-[#3F2305]/80
+                            {% endif %}
+                        ">Archive</a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://github.com/AjitChauhan081/feedback/issues/new"
+                            class="page-link font-semibold text-lg block transition duration-150
+                            {% if request.path == '/blog/contact/' or request.path == '/blog/contact' %}
+                                text-[#3F2305] hover:text-[#3F2305]/80
+                            {% else %}
+                                text-[#3F2305] hover:text-[#3F2305]/80
+                            {% endif %}"
+                        >Contact</a>
+                    </li>
+                    
+                </ul>
+            </nav>
+            
+            <details class="mb-6">
+                <summary class="
+                    text-base font-bold text-[#3F2305] hover:text-[#3F2305]/80 border-b border-[#DFD7BF] pb-2 
+                    mb-3 block cursor-pointer transition duration-150 list-none relative pr-8 
+                    ">
+                    Categories
+                </summary>
+                <ul class="list-none p-0 space-y-1 mt-3">
+                    <li>
+        
+                    {% for cate in category_list %}
+                    {% with category_slug=cate.slug %}
+                    <li class="
+                        {% if category_slug == active_category_slug %}
+                            bg-[#DFD7BF]/70 rounded-md
+                        {% endif %}
+                    ">
+                        <a href="{% url 'category_filter' slug=cate.slug %}" 
+                            class="block py-1 px-3 text-sm transition duration-150 
+                            {% if category_slug == active_category_slug %}
+                                text-[#3F2305] font-bold  
+                            {% else %}
+                                text-[#3F2305] hover:text-[#3F2305]/80 
+                            {% endif %}
+                            "
+                        >
+                            {{ cate.name }} 
+                        </a>
+                    </li>
+                    {% endwith %}
+                    {% empty %}
+                        <li><span class="block py-1 px-3 text-[#3F2305]/60 text-sm">No categories found.</span></li>
+                    {% endfor %}
+                </ul>
+            </details>
+
+            <div class="social-footer border-t border-[#DFD7BF] pt-4">
+                <h3 class="text-base font-medium mb-3 text-[#3F2305] text-center">Get Connected</h3>
+                
+                <ul class="flex justify-center space-x-4 list-none p-0">
+                    {% for link in socialLinkz %}
+                    <a href="{{ link.url }}" 
+                        target="_blank" 
+                        title="{{ link.platform_name }}" 
+                        class="w-10 h-10 rounded-full bg-[#F2EAD3] flex items-center justify-center 
+                                hover:bg-[#DFD7BF] text-[#3F2305] transition-colors">
+                        
+                        <i data-feather="{{ link.icon_name }}" class="w-5 h-5"></i>
+                    </a>
+                    {% endfor %}
+                </ul>
+                
+                {% if not socialLinkz %}
+                    <p class="text-[#3F2305]/60 text-sm mt-3 text-center">No social links set.</p>
+                {% endif %}
+            </div>
+        </aside>
+        {% endblock %}
+        
+        <main class="blog-list w-full p-4 lg:p-8"> 
+            {% block main %}
+                {% endblock %}
+        </main>
+    </div>
+    
+    <style>
+        @media (min-width: 1024px) {
+            .blog-list {
+                /* Sidebar width (w-80 = 320px). Main content starts after the sidebar. */
+                margin-left: 320px; 
+            }
+        }
+    </style>
+    
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>

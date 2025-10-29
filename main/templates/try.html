@@ -1,0 +1,558 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ about_info.name|default:"Ajit Chauhan" }}{% endblock %}</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="{% static 'js/gsap.min.js' %}"></script>
+    <script src="{% static 'js/three.min.js' %}"></script>
+    <script src="{% static 'js/feather.min.js' %}"></script>
+    
+    <script src="{% static 'js/highcharts/highcharts.js' %}"></script>
+    <script src="{% static 'js/highcharts/highcharts-more.js' %}"></script>
+    <script src="{% static 'js/highcharts/modules/exporting.js' %}"></script>
+    <script src="{% static 'js/highcharts/modules/accessibility.js' %}"></script>
+    
+    <script src="{% static 'js/particles.min.js' %}"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+        
+        /* Forces hardware acceleration to fix flickering issues */
+        .fix-flicker {
+            transform: translateZ(0);
+            will-change: transform, opacity; 
+        }
+
+        #container {
+            min-width: 320px;
+            max-width: 800px;
+            height: 600px;
+            margin: 20px auto;
+        }
+        
+        body {
+            font-family: 'Poppins', 'Noto Sans SC', sans-serif;
+            overflow-x: hidden;
+            background-color: #0f172a; /* bg-slate-900 */
+            color: #e2e8f0; /* text-slate-200 */
+        }
+        
+        .section {
+            min-height: 100vh;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+        
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .mandala-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="none" stroke="%23ffffff" stroke-width="0.5" d="M50 0a50 50 0 0 1 50 50 50 50 0 0 1-50 50 50 50 0 0 1-50-50 50 50 0 0 1 50-50zm0 10a40 40 0 0 1 40 40 40 40 0 0 1-40 40 40 40 0 0 1-40-40 40 40 0 0 1 40-40zm0 10a30 30 0 0 1 30 30 30 30 0 0 1-30 30 30 30 0 0 1-30-30 30 30 0 0 1 30-30zm0 10a20 20 0 0 1 20 20 20 20 0 0 1-20 20 20 20 0 0 1-20-20 20 20 0 0 1 20-20zm0 10a10 10 0 0 1 10 10 10 10 0 0 1-10 10 10 10 0 0 1-10-10 10 10 0 0 1 10-10z"/></svg>');
+            background-size: 300px;
+            background-repeat: repeat;
+        }
+        
+        /* Consolidated Keyframes */
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(5deg); } 50% { transform: translateY(-20px) rotate(-5deg); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="mandala-bg"></div>
+    <div id="particles-js" class="fixed top-0 left-0 w-full h-full z-0"></div>
+
+    <div class="relative z-10"> 
+        
+        {% block content %}
+        
+        {% for about_info in about_data %}
+        <section id="hero" class="section flex items-center relative active h-full"> 
+            <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center h-full fix-flicker"> 
+                <div class="text-center md:text-left order-2 md:order-1 flex flex-col justify-center">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-4 text-amber-200">Hello, I'm <span class="text-amber-400">{{ about_info.name }}</span></h1>
+                    
+                    <p class="text-xl md:text-2xl mb-8 max-w-2xl text-slate-300 mx-auto md:mx-0">
+                        Aspiring Data Scientist 
+                    </p>
+                    
+                    <div class="flex justify-center md:justify-start space-x-4">
+                        <a href="#projects" class="px-6 py-3 bg-amber-600 hover:bg-amber-700 rounded-full text-white font-medium transition-all hidden" id="explore-btn">Explore My Journey</a>
+                        {# FIX: Renamed second ID to avoid duplicate #}
+                        <a href="{{ about_info.resume_pdf.url }}" target="_blank" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-full text-white font-medium transition-all hidden" id="resume-btn">My Resume</a> 
+                    </div>
+                </div>
+
+                <div class="flex justify-center md:justify-end md:items-stretch order-1 md:order-2 h-full"> 
+                    <div class="relative w-full h-full flex justify-center items-center"> 
+                        {% if about_info.profile_photo %}
+                        <img 
+                            src="{{ about_info.profile_photo.url }}" 
+                            alt="{{ about_info.name }}" 
+                            class="w-full h-full object-cover relative z-10" 
+                            id="ajit-photo" 
+                            style="border: none; border-radius: 0;"
+                        >
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-10 left-0 right-0 text-center animate-bounce hidden" id="scroll-indicator">
+                <i data-feather="chevron-down" class="text-amber-200 w-8 h-8"></i>
+            </div>
+        </section>
+        {% endfor %}
+        
+        <section id="projects" class="section py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-amber-200">My <span class="text-amber-400">Projects</span></h2>
+                
+                {% if project %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {% for p in project %}
+                    <div class="bg-slate-800 rounded-xl p-6 shadow-lg hover:shadow-amber-500/20 transition-all">
+                        <div class="bg-slate-700 rounded-lg h-48 mb-4 flex items-center justify-center overflow-hidden">
+                            {% if p.project_photo %}
+                                <img src="{{ p.project_photo.url }}" alt="{{ p.project_name }} image" class="w-full h-full object-cover">
+                            {% else %}
+                                <i data-feather="monitor" class="w-16 h-16 text-amber-400"></i>
+                            {% endif %}
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-2 text-amber-200">{{ p.project_name }}</h3>
+                        <p class="text-slate-300 mb-4">{{ p.description|truncatechars:100 }}</p>
+                        
+                        <div class="flex space-x-3 mt-4">
+                            {% if p.github_link %}
+                            <a href="{{ p.github_link }}" target="_blank" class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center hover:bg-amber-500/20 transition-colors" title="GitHub Repository">
+                                <i data-feather="github" class="w-5 h-5 text-amber-400"></i>
+                            </a>
+                            {% endif %}
+                            
+                            {% if p.live_link %}
+                            <a href="{{ p.live_link }}" target="_blank" class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center hover:bg-amber-500/20 transition-colors" title="View Live Site">
+                                <i data-feather="external-link" class="w-5 h-5 text-amber-400"></i>
+                            </a>
+                            {% endif %}
+                            
+                            {% comment %} Display Related Blog Links with Icon and button styling {% endcomment %}
+                            {# NOTE: Changed to p.related_posts.all to match the project loop variable #}
+                            {% for post in p.related_posts.all %} 
+                            <a href="{{ post.get_absolute_url }}" 
+                               target="_blank" 
+                               title="Blog Post: {{ post.title }}" 
+                               class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center hover:bg-amber-500/20 transition-colors" >
+                                <i data-feather="file-text" class="w-5 h-5 text-amber-400"></i>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center text-slate-400">No projects found for this user.</p>
+                {% endif %}
+            </div>
+        </section>
+        
+        <section id="experience" class="section py-20 bg-slate-900/50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-amber-200">Testing <span class="text-amber-400">Phase</span></h2>
+                
+                {% if experience %}
+                <div class="max-w-3xl mx-auto">
+                    <div class="relative">
+                        <div class="border-l-2 border-amber-500 absolute h-full left-4 md:left-1/2 -translate-x-1/2"></div>
+                        
+                        {% for exp in experience %}
+                        <div class="mb-12 relative pl-10 md:pl-0 md:flex {% if forloop.counter0|divisibleby:2 %}md:flex-row-reverse{% endif %}">
+                            
+                            <div class="md:w-1/2 md:px-8 {% if forloop.counter0|divisibleby:2 %}md:ml-auto{% endif %}">
+                                <div class="bg-slate-800 p-6 rounded-lg shadow-lg relative">
+                                    
+                                    <div class="absolute -left-4 md:left-auto w-8 h-8 rounded-full bg-amber-500 border-4 border-slate-900 flex items-center justify-center 
+                                        {% if forloop.counter0|divisibleby:2 %}
+                                            md:-right-4 
+                                        {% else %}
+                                            md:right-[calc(93%+24px)] md:translate-x-1/2 
+                                        {% endif %} 
+                                        ">
+                                        <i data-feather="briefcase" class="w-4 h-4 text-white"></i>
+                                    </div>
+                                    
+                                    <h3 class="text-xl font-bold mb-2 text-amber-200">{{ exp.job_title }}</h3>
+                                    
+                                    <h4 class="text-amber-400 mb-2">{{ exp.company_name }}</h4>
+                                    
+                                    <p class="text-slate-300 text-sm mb-2">
+                                        {{ exp.start_month }} 
+                                        {% if exp.start_year %}{{ exp.start_year }}{% endif %}
+                                        {% if exp.start_month == exp.end_month and exp.start_year == exp.end_year %}
+                                            {% else %}
+                                            - 
+                                            {% if exp.end_year or exp.end_month %}
+                                                {{ exp.end_month }} {% if exp.end_year %}{{ exp.end_year }}{% endif %}
+                                            {% else %}
+                                                Present
+                                            {% endif %}
+                                        {% endif %}
+                                    </p>
+                                    
+                                    <p class="text-slate-300">{{ exp.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-center text-slate-400">No experience records found.</p>
+                {% endif %}
+            </div>
+        </section>
+        
+        <section id="education" class="section py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-amber-200">Training <span class="text-amber-400">Phase</span></h2>
+                
+                {% if education %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    
+                    {% for edu in education %}
+                    <div class="bg-slate-800 rounded-xl p-8 shadow-lg">
+                        <div class="flex items-start mb-4">
+                            
+                            <div class="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center mr-4 flex-shrink-0">
+                                {% if edu.logo %}
+                                    <img src="{{ edu.logo.url }}" alt="{{ edu.institute }} Logo" class="w-full h-full object-contain p-1">
+                                {% else %}
+                                    <i data-feather="book-open" class="w-8 h-8 text-amber-400"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-bold text-amber-200">{{ edu.degree }}</h3>
+                                <p class="text-slate-400">{{ edu.institute }}</p>
+                                <p class="text-slate-500 text-sm mt-1">
+                                    {% if edu.start_year %}{{ edu.start_year }}{% endif %}
+                                    {% if edu.start_year and edu.end_year %} - {% endif %}
+                                    {% if edu.end_year and edu.start_year != edu.end_year %}{{ edu.end_year }}{% endif %}
+                                    {% if not edu.start_year and not edu.end_year %}Ongoing{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <p class="text-slate-300">{{ edu.description }}</p>
+                    </div>
+                    {% endfor %}
+                    
+                </div>
+                {% else %}
+                <p class="text-center text-slate-400">No education records found.</p>
+                {% endif %}
+            </div>
+        </section>
+        
+        <section id="skills" class="section py-10 bg-slate-900/50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-amber-200">Skills <span class="text-amber-400">Visualization</span></h2>
+                <div id="container"></div>
+                
+                <script>
+                    const dynamicSkillData = {{ highcharts_series_json | safe }};
+                    // Highcharts initialization logic
+                    Highcharts.chart('container', {
+                        exporting: { enabled: false },
+                        chart: { type: 'packedbubble', height: '80%', backgroundColor: 'transparent', style: { color: '#E0E0E0' } },
+                        title: { text: 'Core Technology Skills', style: { color: '#FFFFFF' } },
+                        tooltip: { useHTML: true, backgroundColor: 'rgba(33, 33, 33, 0.85)', style: { color: '#FFFFFF' }, pointFormat: '<b>{point.name}:</b> {point.value}% Proficiency' },
+                        plotOptions: {
+                            packedbubble: {
+                                layoutAlgorithm: { splitSeries: true, gravitationalConstant: 0.05 },
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '{point.name}',
+                                    filter: { property: 'value', operator: '>', value: 20 },
+                                    style: { color: '#FFFFFF', textOutline: '1px solid #000000', fontWeight: 'bold' }
+                                }
+                            }
+                        },
+                        series: dynamicSkillData
+                    });
+                </script>
+            </div>
+        </section>
+        
+        <section id="blog" class="section py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-amber-200">My <span class="text-amber-400">Blog</span></h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {% for post in posts|slice:":3" %}
+                    <article class="blog-post bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-amber-500/20 transition-all">
+                        <div class="h-48 bg-slate-700 flex items-center justify-center"><i data-feather="book" class="w-16 h-16 text-amber-400"></i></div>
+                        <div class="p-6">
+                            <div class="flex items-center text-sm text-slate-400 mb-3">
+                                <span class="mr-4"><strong class="text-amber-400">{% for category in post.categories.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% empty %}Uncategorized{% endfor %}</strong></span>
+                                <span class="mx-2">•</span>
+                                <span>{{ post.date|date:"M d, Y" }}</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3 text-amber-200">{{ post.title }}</h3>
+                            <p class="text-slate-300 mb-4">{{ post.summary }}</p>
+                            <a href="{% url 'blog_detail' slug=post.slug %}" class="text-amber-400 hover:text-amber-300 flex items-center text-sm">Read Article <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i></a>
+                        </div>
+                    </article>
+                    {% empty %}
+                    <div class="md:col-span-3 text-center p-12 bg-slate-800 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-bold text-amber-200 mb-2">No wisdom yet. Check back soon for new articles!</h2>
+                        <p class="text-slate-400">Looks like I'm busy coding! New content is on the way.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="text-center mt-12">
+                    <a href="{% url 'blog' %}" class="inline-flex items-center px-6 py-3 border border-amber-400 rounded-full text-amber-400 hover:bg-amber-400 hover:text-slate-900 transition-all">
+                        View All Articles <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <section id="contact" class="section py-20 bg-slate-900/50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-amber-200">Let's <span class="text-amber-400">Connect</span></h2>
+                
+                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+                    
+                    <div>
+                        <h3 class="text-2xl font-bold mb-6 text-amber-200">Send Me a Message</h3>
+                        
+                        <form method="post" class="space-y-6" action="{% url 'portfolio_view' %}#contact">
+                            {% csrf_token %}
+                            
+                            {# Message display removed for brevity #}
+
+                            <div><label for="{{ contact_form.name.id_for_label }}" class="block text-sm font-medium text-slate-300 mb-2">Your Name</label>{{ contact_form.name }}</div>
+                            <div><label for="{{ contact_form.email.id_for_label }}" class="block text-sm font-medium text-slate-300 mb-2">Your Email</label>{{ contact_form.email }}</div>
+                            <div><label for="{{ contact_form.message.id_for_label }}" class="block text-sm font-medium text-slate-300 mb-2">Your Message</label>{{ contact_form.message }}</div>
+
+                            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 px-6 rounded-lg transition-all">
+                                <span class="flex items-center justify-center">Send Message <i data-feather="send" class="ml-2 w-4 h-4"></i></span>
+                            </button>
+                            
+                            <style>
+                                #id_name, #id_email, #id_message { width: 100%; padding: 12px 16px; background-color: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; outline: none; color: white; }
+                                #id_message { resize: vertical; }
+                            </style>
+                        </form>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-bold mb-6 text-amber-200">Contact Information</h3>
+                        
+                        <div class="space-y-6">
+                            
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center mr-4 mt-1"><i data-feather="mail" class="w-5 h-5 text-amber-400"></i></div>
+                                <div><h4 class="text-lg font-bold text-amber-200 mb-1">Email</h4>{% if about_info.email %}<a href="mailto:{{ about_info.email }}" class="text-slate-300 hover:text-amber-400 transition-colors">{{ about_info.email }}</a>{% else %}<p class="text-slate-300">Email not set</p>{% endif %}</div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center mr-4 mt-1"><i data-feather="map-pin" class="w-5 h-5 text-amber-400"></i></div>
+                                <div><h4 class="text-lg font-bold text-amber-200 mb-1">Location</h4>{% if about_info.address %}<p class="text-slate-300">{{ about_info.address }}</p>{% else %}<p class="text-slate-300">Address not set</p>{% endif %}</div>
+                            </div>
+                            
+                            <div class="pt-6">
+                                <h4 class="text-lg font-bold text-amber-200 mb-4">Follow My Journey</h4>
+                                <div class="flex space-x-4">
+                                    {% for link in socialLinkz %}
+                                    <a href="{{ link.url }}" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-amber-500/20 transition-colors" title="{{ link.platform_name }}">
+                                        {# NOTE: Assuming you moved the icon logic to the model as recommended, otherwise the complex template logic must go here. #}
+                                        <i data-feather="{{ link.icon_name }}" class="w-5 h-5 text-amber-400"></i>
+                                    </a>
+                                    {% endfor %}
+                                    
+                                    {% if not socialLinkz %}<p class="text-slate-400 text-sm">No social links set.</p>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        {% endblock content %}
+        
+    </div>
+    
+    <footer class="py-12 border-t border-slate-800">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex justify-center mb-6">
+                <a href="#hero" class="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mx-2 hover:bg-amber-500/30 transition-colors"><i data-feather="home" class="w-5 h-5 text-amber-400"></i></a>
+                <a href="#projects" class="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mx-2 hover:bg-amber-500/30 transition-colors"><i data-feather="briefcase" class="w-5 h-5 text-amber-400"></i></a>
+                <a href="#experience" class="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mx-2 hover:bg-amber-500/30 transition-colors"><i data-feather="award" class="w-5 h-5 text-amber-400"></i></a>
+                <a href="#contact" class="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mx-2 hover:bg-amber-500/30 transition-colors"><i data-feather="mail" class="w-5 h-5 text-amber-400"></i></a>
+            </div>
+            <p class="text-slate-400 mb-4">May all beings be happy</p>
+            <p class="text-slate-500 text-sm">© 2025 Ajit Chauhan Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <nav class="fixed bottom-8 left-0 right-0 z-50 hidden" id="main-nav">
+        <div class="container mx-auto px-6">
+            <div class="max-w-xs mx-auto bg-slate-800/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
+                <div class="flex justify-between">
+                    <a href="#hero" class="nav-link w-12 h-12 rounded-full flex items-center justify-center text-slate-300 hover:text-amber-400 transition-colors" data-tooltip="Home"><i data-feather="home" class="w-5 h-5"></i></a>
+                    <a href="#projects" class="nav-link w-12 h-12 rounded-full flex items-center justify-center text-slate-300 hover:text-amber-400 transition-colors" data-tooltip="Projects"><i data-feather="briefcase" class="w-5 h-5"></i></a>
+                    <a href="#experience" class="nav-link w-12 h-12 rounded-full flex items-center justify-center text-slate-300 hover:text-amber-400 transition-colors" data-tooltip="Experience"><i data-feather="award" class="w-5 h-5"></i></a>
+                    <a href="#education" class="nav-link w-12 h-12 rounded-full flex items-center justify-center text-slate-300 hover:text-amber-400 transition-colors" data-tooltip="Education"><i data-feather="book" class="w-5 h-5"></i></a>
+                    <a href="#skills" class="nav-link w-12 h-12 rounded-full flex items-center justify-center text-slate-300 hover:text-amber-400 transition-colors" data-tooltip="Skills"><i data-feather="zap" class="w-5 h-5"></i></a>
+                    <a href="{% url 'blog' %}" class="nav-link w-12 h-12 rounded-full flex items-center justify-center text-slate-300 hover:text-amber-400 transition-colors" data-tooltip="Blog"><i data-feather="edit" class="w-5 h-5"></i></a>
+                    <a href="#contact" class="nav-link w-12 h-12 rounded-full flex items-center justify-center text-slate-300 hover:text-amber-400 transition-colors" data-tooltip="Contact"><i data-feather="mail" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ensure GSAP is defined globally
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+        // 1. Set initial state (opacity 0 and slightly offset for h1, p, and photo)
+        // This targets the h1, p.text-xl, and #ajit-photo in the hero section
+        gsap.set(["h1", "p.text-xl", "#ajit-photo"], { opacity: 0, y: 30 });
+        
+        // 2. Animate elements sequentially
+        tl.to(".fix-flicker", { opacity: 1, duration: 0.1 }) // Ensure container is visible immediately
+            // Ensure buttons/indicator start truly invisible (using GSAP's quick 'to' method)
+            .to("#explore-btn, #resume-btn, #scroll-indicator", { opacity: 0, duration: 0.01 }, 0) 
+            
+            // Text Entrance (H1 and P)
+            .to("h1", { opacity: 1, y: 0, duration: 0.8 }, 0.5) // Start H1 0.5 seconds in
+            .to("p.text-xl", { opacity: 1, y: 0, duration: 0.8 }, "-=0.5") // P follows H1 shortly after
+
+            // Photo Entrance (Slightly scales up and fades in)
+            .fromTo("#ajit-photo", 
+                { opacity: 0, scale: 0.8 }, // Start state
+                { opacity: 1, scale: 1, duration: 1.2, ease: "elastic.out(1, 0.5)" }, // End state
+                "-=0.5" // Overlap with the text animation
+            )
+
+            // Button Entrance (Fades in immediately after text/photo are mostly done)
+            .to("#explore-btn", { 
+                opacity: 1, 
+                display: "inline-flex", // Change 'hidden' to 'inline-flex'
+                duration: 0.5 
+            }, "-=0.8")
+            .to("#resume-btn", { 
+                opacity: 1, 
+                display: "inline-flex", 
+                duration: 0.5 
+            }, "-=0.4") // Stagger resume button slightly
+
+            // Scroll Indicator Fade-In
+            .to("#scroll-indicator", { 
+                opacity: 1, 
+                display: "block", 
+                duration: 0.5 
+            }, ">"); // Starts after the previous animation finishes
+
+
+        // --- Cleaned up Scroll and Particle Logic ---
+
+        // Show other sections when scrolling down
+        document.getElementById('explore-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('projects').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Scroll listener for nav visibility and section active state
+        window.addEventListener('scroll', function() {
+            const hero = document.getElementById('hero');
+            const nav = document.getElementById('main-nav');
+            
+            if (hero) { 
+                const heroHeight = hero.offsetHeight;
+                
+                // Show nav when scrolling past hero
+                if (window.scrollY > heroHeight * 0.8) {
+                    nav.classList.remove('hidden');
+                } else {
+                    nav.classList.add('hidden');
+                }
+            }
+
+            // Animate sections when they come into view
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                if (sectionTop < window.innerHeight * 0.75) {
+                    section.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // --- CONSOLIDATED PARTICLES.JS INITIALIZATION ---
+        // The previous code had TWO particle initializations; this one is clean.
+        particlesJS('particles-js', {
+            "particles": {
+                "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#ffc107" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5, "random": false, "anim": { "enable": false } },
+                "size": { "value": 3, "random": true, "anim": { "enable": false } },
+                "line_linked": { "enable": true, "distance": 150, "color": "#ffc107", "opacity": 0.4, "width": 1 },
+                "move": { "enable": true, "speed": 6, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
+            },
+            "interactivity": {
+                "detect_on": "window", // FIX for wider interactivity
+                "events": {
+                    "onhover": { "enable": true, "mode": "repulse" },
+                    "onclick": { "enable": true, "mode": "push" },
+                    "resize": true
+                },
+                "modes": {
+                    "repulse": { "distance": 100, "duration": 0.4 },
+                    "push": { "particles_nb": 4 }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Apply pointer-events: none for clicks to pass through the canvas
+        const particlesCanvas = document.querySelector('#particles-js canvas');
+        if (particlesCanvas) {
+            particlesCanvas.style.pointerEvents = 'none';
+        }
+        
+        // Initialize feather icons (must be last)
+        feather.replace();
+    });
+</script>
+</body>
+</html>

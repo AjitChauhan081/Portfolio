@@ -1,0 +1,122 @@
+{% extends 'master.html' %}
+
+{% block main %}
+
+<div class="container mx-auto px-4 py-12">
+    <article class="page bg-[#EFFFFB] p-6 md:p-10 lg:p-12 rounded-xl shadow-xl">
+        
+        <header class="post-header mb-8 border-b border-[#4F98CA]/50 pb-4">
+            <h1 class="post-title text-4xl font-extrabold text-[#272727]">
+                Hi, I'm {{ about.name|default:"Ajit Chauhan" }}
+            </h1>
+        </header>
+
+        <div class="post-content mb-12">
+            
+            {% if about.profile_photo %}
+            <figure class="float-right ml-6 mb-6 max-w-xs w-full text-center">
+                <img src="{{ about.profile_photo.url }}" 
+                     alt="{{ about.name }} Profile Photo" 
+                     class="w-full h-auto rounded-lg shadow-lg border-4 border-[#50D890]" 
+                >
+                <figcaption class="caption text-sm text-[#272727]/60 mt-2 italic">
+                    {{ about.tagline|default:"A photo of me." }}
+                </figcaption>
+            </figure>
+            {% endif %}
+
+            <div class="prose prose-lg max-w-none text-[#272727] leading-relaxed">
+                {{ about.description|safe }}
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+
+        {% if project_list %}
+        <div class="mt-12 pt-6 border-t border-[#4F98CA]/50">
+            <h2 class="text-3xl font-bold text-[#272727] mb-6" id="projects">Recent Projects</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                {% for project in project_list %}
+                <div class="p-4 border border-[#4F98CA]/50 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                    
+                    <h3 class="text-xl font-semibold text-[#4F98CA] mb-1">{{ project.project_name }}</h3>
+                    <p class="text-sm text-[#272727]/60 mb-3">{{ project.date|date:"F Y" }}</p>
+                    
+                    {% if project.project_photo %}
+                        <img src="{{ project.project_photo.url }}" 
+                             alt="{{ project.project_name }} Screenshot" 
+                             class="w-full h-auto rounded mb-3 border border-[#4F98CA]/30"
+                        >
+                    {% endif %}
+                    
+                    <div class="text-[#272727] prose prose-sm max-w-none mb-3">
+                        {{ project.description|truncatewords:30|linebreaks }}
+                    </div>
+
+                    <div class="flex space-x-4 text-sm font-medium">
+                        {% if project.github_link %}
+                            <a href="{{ project.github_link }}" target="_blank" class="text-[#4F98CA] hover:text-[#50D890] transition-colors">GitHub Repository</a>
+                        {% endif %}
+                        {% if project.live_link %}
+                            <a href="{{ project.live_link }}" target="_blank" class="text-[#50D890] hover:text-[#4F98CA] transition-colors">View Live</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if experience_list %}
+        <div class="mt-12 pt-6 border-t border-[#4F98CA]/50">
+            <h2 class="text-3xl font-bold text-[#272727] mb-6" id="experience">Experience</h2>
+            
+            <div class="space-y-8">
+                {% for exp in experience_list %}
+                <div class="border-l-4 border-[#50D890] pl-4 py-2">
+                    <h3 class="text-xl font-semibold text-[#272727]">{{ exp.job_title }}</h3>
+                    <p class="text-[#4F98CA] font-medium mb-1">{{ exp.company_name }}</p>
+                    <p class="text-sm text-[#272727]/60 mb-2">
+                        {{ exp.start_month }} {% if exp.start_year %}{{ exp.start_year }}{% endif %} - 
+                        {% if exp.end_year or exp.end_month %}
+                            {{ exp.end_month }} {% if exp.end_year %}{{ exp.end_year }}{% endif %}
+                        {% else %}
+                            Present
+                        {% endif %}
+                    </p>
+                    <div class="text-[#272727] prose prose-sm max-w-none">{{ exp.description|linebreaks }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if education_list %}
+        <div class="mt-12 pt-6 border-t border-[#4F98CA]/50">
+            <h2 class="text-3xl font-bold text-[#272727] mb-6" id="education">Education</h2>
+            
+            <div class="space-y-8">
+                {% for edu in education_list %}
+                <div class="border-l-4 border-[#4F98CA] pl-4 py-2">
+                    <h3 class="text-xl font-semibold text-[#272727]">{{ edu.degree }}</h3>
+                    <p class="text-[#50D890] font-medium mb-1">{{ edu.institute }}</p>
+                    <p class="text-sm text-[#272727]/60 mb-2">
+                        {{ edu.start_month }} {% if edu.start_year %}{{ edu.start_year }}{% endif %} - 
+                        {{ edu.end_month }} {% if edu.end_year %}{{ edu.end_year }}{% endif %}
+                    </p>
+                    <div class="text-[#272727] prose prose-sm max-w-none">{{ edu.description|linebreaks }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <footer class="mt-12 pt-4 border-t border-[#4F98CA]/50 text-sm text-[#272727]/80 text-center">
+             Ready to connect? Find my social links in the sidebar or check my <a href="https://github.com/AjitChauhan081/feedback/issues/new" class="text-[#4F98CA] hover:text-[#50D890] transition-colors">Contact</a> page.
+        </footer>
+        
+    </article>
+</div>
+
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends "master.html" %}
+{% load static %}
+{% block main %}
+<div class="max-w-xl mx-auto mb-10">
+    <form method="get" action="{% url 'blog' %}" class="flex items-center space-x-2 bg-[#EFFFFB] p-3 rounded-xl shadow-lg">
+        <input type="text" name="q" 
+               placeholder="Search posts by title or tag..." 
+               value="{{ request.GET.q|default:'' }}"
+               class="flex-grow p-2 border-none focus:outline-none text-[#272727]"
+        >
+        <button type="submit" class="bg-[#4F98CA] text-[#EFFFFB] p-2 rounded-lg hover:bg-[#50D890] transition-colors">
+            <i data-feather="search" class="w-5 h-5"></i>
+        </button>
+    </form>
+</div>
+
+<div class="posts-list w-full">
+
+<div class="container mx-auto px-4 py-12">
+    <article class="post bg-[#EFFFFB] p-6 md:p-10 lg:p-12 rounded-xl shadow-xl">
+        
+        <header class="post-header mb-8">
+            
+            <h1 class="post-title text-4xl font-extrabold text-[#272727] mb-2">
+                {{ posts.title }}
+            </h1>
+            
+            <div class="meta text-sm text-[#4F98CA] flex flex-wrap items-center space-x-4 pt-1">
+                
+                <time class="date dt-published" datetime="{{ posts.date|date:'Y-m-d' }}" itemprop="datePublished">
+                    {{ posts.date|date:"M d, Y" }}
+                </time>
+                
+                <span class="text-[#4F98CA]">•</span>
+                
+                <span class="tags space-x-2">
+                    {% for category in posts.categories.all %}
+                        <a href="{% url 'category_filter' slug=category.slug %}" 
+                           class="text-[#4F98CA] hover:text-[#50D890] transition-colors">
+                            {{ category.name }}
+                        </a>
+                        {% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        <span class="text-[#4F98CA]">Uncategorized</span>
+                    {% endfor %}
+                </span>
+                
+                {% comment %} Edit Link {% endcomment %}
+                <span class="edit ml-auto">
+                    <a href="#" class="text-xs text-[#4F98CA] hover:text-[#50D890]">suggest edit</a>
+                </span>
+            </div>
+        </header>
+
+        <div class="post-content e-content" itemprop="articleBody">
+            <div class="prose prose-lg max-w-none text-[#272727] leading-relaxed">
+                {{ posts.description|safe }}
+            </div>
+        </div>
+        
+        <footer class="mt-12 pt-4 border-t border-[#4F98CA]/50 text-sm text-[#4F98CA]">
+             Found a typo? <a href="https://github.com/AjitChauhan081/feedback/issues/new" class="text-[#4F98CA] hover:text-[#50D890]">Suggest an edit</a>.
+        </footer>
+        <div id="comments" class="comments mt-12 pt-8 border-t border-[#4F98CA]/50">
+            <h2 class="text-3xl font-bold text-[#272727] mb-6">Comments</h2>
+            
+            <form action="{% url 'blog_detail' slug=posts.slug %}" method="post" class="comment-form mb-10 p-6 border border-[#4F98CA]/50 rounded-lg bg-[#EFFFFB]">
+                {% csrf_token %}
+                
+                <h3 class="text-xl font-semibold text-[#272727] mb-4">Leave a Response</h3>
+
+                <div class="comment-box flex space-x-4 mb-4 items-start">
+                    <img src="{% static 'img/unknown-avatar.png' %}" alt="Your Avatar" class="w-12 h-12 rounded-full flex-shrink-0 avatar">
+                    
+                    <div class="commenttext w-full">
+                        {{ comment_form.body }}
+                    </div>
+                </div>
+                
+                <div class="comment-author space-y-4">
+                    <div class="control-group flex space-x-4">
+                        {{ comment_form.author_name }}
+                        {{ comment_form.author_email }}
+                    </div>
+
+                    <div class="flex justify-between items-center mt-4">
+                        <button type="submit" class="px-6 py-2 bg-[#50D890] text-[#272727] font-medium rounded-lg hover:bg-[#4F98CA] transition-colors comment-button">
+                            Leave Response
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <h3 class="comment-count text-2xl font-semibold text-[#272727] mb-4">
+                {% if comments.count == 1 %}
+                    One response
+                {% else %}
+                    {{ comments.count }} responses
+                {% endif %}
+            </h3>
+            
+            <ol class="comments-list list-none p-0 space-y-6">
+                {% for comment in comments %}
+                <li>
+                    <div class="flex space-x-4 items-start">
+                        <img alt="Avatar for {{ comment.author_name }}" src="https://robohash.org/{{ comment.author_name|urlencode }}?size=48x48" class="avatar w-12 h-12 rounded-full flex-shrink-0">
+                        
+                        <blockquote class="w-full bg-[#EFFFFB] p-4 rounded-lg border border-[#4F98CA]/50">
+                            <cite class="text-sm flex items-center space-x-2 text-[#4F98CA] font-medium">
+                                <span class="author text-[#272727] font-bold">{{ comment.author_name }}</span>
+                                <span class="bullet">•</span>
+                                <a href="#comment-{{ comment.id }}" class="muted text-[#4F98CA] hover:underline" title="{{ comment.created_on|date:'c' }}">
+                                    {{ comment.created_on|date:"M d, Y" }}
+                                </a>
+                            </cite>
+                            <div class="comment-body text-[#272727] mt-2">
+                                <p>{{ comment.body|linebreaks }}</p>
+                            </div>
+                        </blockquote>
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+        </div>
+        </article>
+</div>
+    </article>
+</div>
+
+{% endblock %}

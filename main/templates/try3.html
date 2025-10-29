@@ -1,0 +1,787 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ about_info.name|default:"Ajit Chauhan" }}{% endblock %}</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="{% static 'js/gsap.min.js' %}"></script>
+    <script src="{% static 'js/three.min.js' %}"></script>
+    <script src="{% static 'js/feather.min.js' %}"></script>
+    
+    <script src="{% static 'js/highcharts/highcharts.js' %}"></script>
+    <script src="{% static 'js/highcharts/highcharts-more.js' %}"></script>
+    <script src="{% static 'js/highcharts/modules/exporting.js' %}"></script>
+    <script src="{% static 'js/highcharts/modules/accessibility.js' %}"></script>
+    
+    <script src="{% static 'js/particles.min.js' %}"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+        
+        /* Forces hardware acceleration to fix flickering issues */
+        .fix-flicker {
+            transform: translateZ(0);
+            will-change: transform, opacity; 
+        }
+
+        #container {
+            min-width: 320px;
+            max-width: 800px;
+            height: 600px;
+            margin: 20px auto;
+        }
+        
+        body {
+            font-family: 'Poppins', 'Noto Sans SC', sans-serif;
+            overflow-x: hidden;
+            color: #e2e8f0; /* text-slate-200 */
+        }
+        
+        .section {
+            min-height: 100vh;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+        
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .mandala-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="none" stroke="%23ffffff" stroke-width="0.5" d="M50 0a50 50 0 0 1 50 50 50 50 0 0 1-50 50 50 50 0 0 1-50-50 50 50 0 0 1 50-50zm0 10a40 40 0 0 1 40 40 40 40 0 0 1-40 40 40 40 0 0 1-40-40 40 40 0 0 1 40-40zm0 10a30 30 0 0 1 30 30 30 30 0 0 1-30 30 30 30 0 0 1-30-30 30 30 0 0 1 30-30zm0 10a20 20 0 0 1 20 20 20 20 0 0 1-20 20 20 20 0 0 1-20-20 20 20 0 0 1 20-20zm0 10a10 10 0 0 1 10 10 10 10 0 0 1-10 10 10 10 0 0 1-10-10 10 10 0 0 1 10-10z"/></svg>');
+            background-size: 300px;
+            background-repeat: repeat;
+        }
+        
+        /* Consolidated Keyframes */
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(5deg); } 50% { transform: translateY(-20px) rotate(-5deg); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <!-- <div class="mandala-bg"></div> -->
+    <div id="particles-js" class="fixed top-0 left-0 w-full h-full z-0"></div>
+
+    <div class="relative z-10"> 
+        
+        {% block content %}
+        
+        {% for about_info in about_data %}
+        <section id="hero" class="section flex items-center relative active h-full"> 
+    <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center h-full fix-flicker"> 
+        <div class="text-center md:text-left order-2 md:order-1 flex flex-col justify-center">
+            
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 text-[#111111]">Hello, I'm <span class="text-[#FFB534]">{{ about_info.name }}</span></h1>
+            
+            <p class="text-xl md:text-2xl mb-8 max-w-2xl text-[#111111]/80 mx-auto md:mx-0">
+                Aspiring Data Scientist 
+            </p>
+            
+            <div class="flex justify-center md:justify-start space-x-4">
+    <a href="#projects" class="px-6 py-3 bg-[#65B741] hover:bg-[#FFB534] rounded-full text-[#1D1616] font-medium transition-all" 
+       id="explore-btn"
+    >Explore My Journey</a>
+
+    <a href="{{ about_info.resume_pdf.url }}" 
+       class="px-6 py-3 bg-[#C1F2B0] hover:bg-[#FFB534] rounded-full text-[#1D1616] font-medium transition-all " 
+       id="resume-btn"
+       target="_blank"  
+    >My Resume</a> 
+</div>
+        </div>
+
+        <div class="flex justify-center md:justify-end md:items-stretch order-1 md:order-2 h-full"> 
+            <div class="relative w-full h-full flex justify-center items-center"> 
+                {% if about_info.profile_photo %}
+                <img 
+                    src="{{ about_info.profile_photo.url }}" 
+                    alt="{{ about_info.name }}" 
+                    class="w-full h-full object-cover relative z-10" 
+                    id="ajit-photo" 
+                    style="border: none; border-radius: 0;"
+                >
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="absolute bottom-10 left-0 right-0 text-center animate-bounce hidden" id="scroll-indicator">
+        <i data-feather="chevron-down" class="text-[#111111] w-8 h-8"></i>
+    </div>
+</section>
+        {% endfor %}
+        
+<section id="projects" class="section py-20">
+    <div class="container mx-auto px-6">
+        {# Change header color to match the new pink theme #}
+        <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-pink-400">
+            My <span class="text-pink-600">Projects</span>
+        </h2>
+        
+        {% if project %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for p in project %}
+            {# Change card background, text, and shadow color for the new theme #}
+            <div class="bg-gray-900 rounded-xl p-6 shadow-xl hover:shadow-2xl hover:shadow-pink-600/30 transition-all duration-300 transform hover:-translate-y-1">
+                <div class="bg-gray-800 rounded-lg h-48 mb-4 flex items-center justify-center overflow-hidden border border-pink-700/50">
+                    {% if p.project_photo %}
+                        <img src="{{ p.project_photo.url }}" alt="{{ p.project_name }} image" class="w-full h-full object-cover">
+                    {% else %}
+                        {# Change fallback icon color #}
+                        <i data-feather="monitor" class="w-16 h-16 text-pink-600"></i>
+                    {% endif %}
+                </div>
+                
+                {# Change project name color #}
+                <h3 class="text-xl font-bold mb-2 text-white">{{ p.project_name }}</h3>
+                <p class="text-pink-100/70 mb-4">{{ p.description|truncatechars:100 }}</p>
+                
+                <div class="flex space-x-3 mt-4">
+                    {% if p.github_link %}
+                    {# Change link button style: dark background, pink icon, pink hover effect #}
+                    <a href="{{ p.github_link }}" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center border border-pink-700/50 hover:bg-pink-700/20 transition-colors" title="GitHub Repository">
+                        <i data-feather="github" class="w-5 h-5 text-pink-500"></i>
+                    </a>
+                    {% endif %}
+                    
+                    {% if p.live_link %}
+                    {# Change link button style: dark background, pink icon, pink hover effect #}
+                    <a href="{{ p.live_link }}" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center border border-pink-700/50 hover:bg-pink-700/20 transition-colors" title="View Live Site">
+                        <i data-feather="external-link" class="w-5 h-5 text-pink-500"></i>
+                    </a>
+                    {% endif %}
+                    
+                    {% comment %} Display Related Blog Links with Icon and button styling {% endcomment %}
+                    {# NOTE: Changed to p.related_posts.all to match the project loop variable #}
+                    {% for post in p.related_posts.all %} 
+                    {# Change link button style: dark background, pink icon, pink hover effect #}
+                    <a href="{{ post.get_absolute_url }}" 
+                        target="_blank" 
+                        title="Blog Post: {{ post.title }}" 
+                        class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center border border-pink-700/50 hover:bg-pink-700/20 transition-colors" >
+                        <i data-feather="file-text" class="w-5 h-5 text-pink-500"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-pink-400/80">No projects found for this user.</p>
+        {% endif %}
+    </div>
+</section>
+       <section id="experience" class="section py-20" >
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-[#DBE2EF]">Testing <span class="text-[#3F72AF]">Phase</span></h2>
+        
+        {% if experience %}
+        <div class="max-w-3xl mx-auto">
+            <div class="relative">
+                <div class="border-l-2 border-[#3F72AF] absolute h-full left-4 md:left-1/2 -translate-x-1/2"></div>
+                
+                {% for exp in experience %}
+                <div class="mb-12 relative pl-10 md:pl-0 md:flex {% if forloop.counter0|divisibleby:2 %}md:flex-row-reverse{% endif %}">
+                    
+                    <div class="md:w-1/2 md:px-8 {% if forloop.counter0|divisibleby:2 %}md:ml-auto{% endif %}">
+                        <div class="bg-[#112D4E] p-6 rounded-lg shadow-xl relative border border-[#3F72AF]/50">
+                            
+                            <div class="absolute -left-4 md:left-auto w-8 h-8 rounded-full bg-[#3F72AF] border-4 border-[#112D4E] flex items-center justify-center 
+                                {% if forloop.counter0|divisibleby:2 %}
+                                    md:-right-4 
+                                {% else %}
+                                    md:right-[calc(93%+24px)] md:translate-x-1/2 
+                                {% endif %} 
+                                ">
+                                <i data-feather="briefcase" class="w-4 h-4 text-white"></i>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold mb-2 text-[#F9F7F7]">{{ exp.job_title }}</h3>
+                            
+                            <h4 class="text-[#DBE2EF] mb-2">{{ exp.company_name }}</h4>
+                            
+                            <p class="text-[#DBE2EF] text-sm mb-2">
+                                {{ exp.start_month }} 
+                                {% if exp.start_year %}{{ exp.start_year }}{% endif %}
+                                {% if exp.start_month == exp.end_month and exp.start_year == exp.end_year %}
+                                    {% else %}
+                                    - 
+                                    {% if exp.end_year or exp.end_month %}
+                                        {{ exp.end_month }} {% if exp.end_year %}{{ exp.end_year }}{% endif %}
+                                    {% else %}
+                                        Present
+                                    {% endif %}
+                                {% endif %}
+                            </p>
+                            
+                            <p class="text-[#DBE2EF]">{{ exp.description }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center text-[#DBE2EF]">No experience records found.</p>
+        {% endif %}
+    </div>
+</section>
+        
+        <section id="education" class="section py-20">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-[#EAEAEA]">Training <span class="text-[#FF2E63]">Phase</span></h2>
+        
+        {% if education %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            
+            {% for edu in education %}
+            <div class="bg-[rgba(37,42,52,0.8)] rounded-xl p-8 shadow-lg border border-[#08D9D6]/30">
+                <div class="flex items-start mb-4">
+                    
+                    <div class="w-16 h-16 rounded-full bg-[#08D9D6]/20 flex items-center justify-center mr-4 flex-shrink-0">
+                        {% if edu.logo %}
+                            <img src="{{ edu.logo.url }}" alt="{{ edu.institute }} Logo" class="w-full h-full object-contain p-1">
+                        {% else %}
+                            <i data-feather="book-open" class="w-8 h-8 text-[#08D9D6]"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold text-[#EAEAEA]">{{ edu.degree }}</h3>
+                        
+                        <p class="text-[#08D9D6]">{{ edu.institute }}</p>
+                        
+                        <p class="text-[#EAEAEA]/80 text-sm mt-1">
+                            {% if edu.start_year %}{{ edu.start_year }}{% endif %}
+                            {% if edu.start_year and edu.end_year %} - {% endif %}
+                            {% if edu.end_year and edu.start_year != edu.end_year %}{{ edu.end_year }}{% endif %}
+                            {% if not edu.start_year and not edu.end_year %}Ongoing{% endif %}
+                        </p>
+                    </div>
+                </div>
+                <p class="text-[#EAEAEA]">{{ edu.description }}</p>
+            </div>
+            {% endfor %}
+            
+        </div>
+        {% else %}
+        <p class="text-center text-[#EAEAEA]/80">No education records found.</p>
+        {% endif %}
+    </div>
+</section>
+        
+        <section id="skills" class="section py-10 bg-slate-900/50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-amber-200">Skills <span class="text-amber-400">Visualization</span></h2>
+                <div id="container"></div>
+                
+                <script>
+                    const dynamicSkillData = {{ highcharts_series_json | safe }};
+                    // Highcharts initialization logic
+                    Highcharts.chart('container', {
+                        exporting: { enabled: false },
+                        chart: { type: 'packedbubble', height: '80%', backgroundColor: 'transparent', style: { color: '#E0E0E0' } },
+                        title: { text: 'Core Technology Skills', style: { color: '#FFFFFF' } },
+                        tooltip: { useHTML: true, backgroundColor: 'rgba(33, 33, 33, 0.85)', style: { color: '#FFFFFF' }, pointFormat: '<b>{point.name}:</b> {point.value}% Proficiency' },
+                        plotOptions: {
+                            packedbubble: {
+                                layoutAlgorithm: { splitSeries: true, gravitationalConstant: 0.05 },
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '{point.name}',
+                                    filter: { property: 'value', operator: '>', value: 20 },
+                                    style: { color: '#FFFFFF', textOutline: '1px solid #000000', fontWeight: 'bold' }
+                                }
+                            }
+                        },
+                        series: dynamicSkillData
+                    });
+                </script>
+            </div>
+        </section>
+        
+<section id="blog" class="section py-20">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-[#414141]">My <span class="text-[#FF0000]">Blog</span></h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for post in posts|slice:":3" %}
+            <article class="blog-post bg-[rgba(37,37,37,0.8)] rounded-xl overflow-hidden shadow-lg hover:shadow-[#FF0000]/40 transition-all">
+                <div class="h-48 bg-[#414141] flex items-center justify-center"><i data-feather="book" class="w-16 h-16 text-[#FF0000]"></i></div>
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-white mb-3">
+                        <span class="mr-4"><strong class="text-[#FF0000]">{% for category in post.categories.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% empty %}Uncategorized{% endfor %}</strong></span>
+                        <span class="mx-2">•</span>
+                        <span>{{ post.date|date:"M d, Y" }}</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">{{ post.title }}</h3>
+                    <p class="text-white mb-4">{{ post.summary }}</p>
+                    <a href="{% url 'blog_detail' slug=post.slug %}" class="text-[#FF0000] hover:text-[#AF0404] flex items-center text-sm">Read Article <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i></a>
+                </div>
+            </article>
+            {% empty %}
+            <div class="md:col-span-3 text-center p-12 bg-[rgba(37,37,37,0.8)] rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold text-white mb-2">No wisdom yet. Check back soon for new articles!</h2>
+                <p class="text-[#414141]">Looks like I'm busy coding! New content is on the way.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="{% url 'blog' %}" class="inline-flex items-center px-6 py-3 border border-[#AF0404] rounded-full text-[#FF0000] hover:bg-[#AF0404] hover:text-white transition-all">
+                View All Articles <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
+            </a>
+        </div>
+    </div>
+</section>
+        
+        <section id="contact" class="section py-20" >
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center text-[#111111]">Let's <span class="text-[#BEAEE2]">Connect</span></h2>
+        
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+            
+            <div>
+                <h3 class="text-2xl font-bold mb-6 text-[#111111]">Send Me a Message</h3>
+                
+                <form method="post" class="space-y-6" action="{% url 'portfolio_view' %}#contact">
+                    {% csrf_token %}
+                    
+                    {% if messages %}
+                        <ul class="space-y-2">
+                    {% for message in messages %}
+                        <li class="p-3 rounded-lg text-sm {% if message.tags == 'success' %}bg-green-600 text-white{% else %}bg-red-600 text-white{% endif %}">
+                            {{ message }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <div><label for="{{ contact_form.name.id_for_label }}" class="block text-sm font-medium text-[#111111] mb-2">Your Name</label>{{ contact_form.name }}</div>
+                    <div><label for="{{ contact_form.email.id_for_label }}" class="block text-sm font-medium text-[#111111] mb-2">Your Email</label>{{ contact_form.email }}</div>
+                    <div><label for="{{ contact_form.message.id_for_label }}" class="block text-sm font-medium text-[#111111] mb-2">Your Message</label>{{ contact_form.message }}</div>
+
+                    <button type="submit" class="w-full bg-[#CDF0EA] hover:bg-[#BEAEE2] text-[#111111] font-medium py-3 px-6 rounded-lg transition-all">
+                        <span class="flex items-center justify-center">Send Message <i data-feather="send" class="ml-2 w-4 h-4"></i></span>
+                    </button>
+                    
+                    <style>
+                        /* Form Inputs: background-color: #1e293b -> #F7DBF0, border: #334155 -> #BEAEE2, color: white -> #111111 */
+                        #id_name, #id_email, #id_message { 
+                            width: 100%; 
+                            padding: 12px 16px; 
+                            background-color: #F7DBF0; 
+                            border: 1px solid #BEAEE2; 
+                            border-radius: 0.5rem; 
+                            outline: none; 
+                            color: #111111; 
+                        }
+                        #id_message { resize: vertical; }
+                    </style>
+                </form>
+            </div>
+            
+            <div>
+                <h3 class="text-2xl font-bold mb-6 text-[#111111]">Contact Information</h3>
+                
+                <div class="space-y-6">
+                    
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-[#BEAEE2]/40 flex items-center justify-center mr-4 mt-1"><i data-feather="mail" class="w-5 h-5 text-[#111111]"></i></div>
+                        <div>
+                            <h4 class="text-lg font-bold text-[#111111] mb-1">Email</h4>
+                            {% if about_info.email %}
+                                <a href="mailto:{{ about_info.email }}" class="text-[#111111]/80 hover:text-[#BEAEE2] transition-colors">{{ about_info.email }}</a>
+                            {% else %}
+                                <p class="text-[#111111]/80">Email not set</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-[#BEAEE2]/40 flex items-center justify-center mr-4 mt-1"><i data-feather="map-pin" class="w-5 h-5 text-[#111111]"></i></div>
+                        <div>
+                            <h4 class="text-lg font-bold text-[#111111] mb-1">Location</h4>
+                            {% if about_info.address %}
+                                <p class="text-[#111111]/80">{{ about_info.address }}</p>
+                            {% else %}
+                                <p class="text-[#111111]/80">Address not set</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="pt-6">
+                        <h4 class="text-lg font-bold text-[#111111] mb-4">Follow My Journey</h4>
+                        <div class="flex space-x-4">
+                            {% for link in socialLinkz %}
+                            <a href="{{ link.url }}" target="_blank" class="w-10 h-10 rounded-full bg-[#BEAEE2]/40 flex items-center justify-center hover:bg-[#BEAEE2]/80 transition-colors" title="{{ link.platform_name }}">
+                                <i data-feather="{{ link.icon_name }}" class="w-5 h-5 text-[#111111]"></i>
+                            </a>
+                            {% endfor %}
+                            
+                            {% if not socialLinkz %}
+                                <p class="text-[#111111]/60 text-sm">No social links set.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+        
+        {% endblock content %}
+        
+    </div>
+    
+   <footer class="py-12 border-t border-[#8E1616]" style="background-color: #1D1616;">
+    <div class="container mx-auto px-6 text-center">
+        <div class="flex justify-center mb-6">
+            
+            <a href="#hero" class="w-12 h-12 rounded-full bg-[#8E1616]/20 flex items-center justify-center mx-2 hover:bg-[#8E1616]/40 transition-colors">
+                <i data-feather="home" class="w-5 h-5 text-[#D84040]"></i>
+            </a>
+            <a href="#projects" class="w-12 h-12 rounded-full bg-[#8E1616]/20 flex items-center justify-center mx-2 hover:bg-[#8E1616]/40 transition-colors">
+                <i data-feather="briefcase" class="w-5 h-5 text-[#D84040]"></i>
+            </a>
+            <a href="#experience" class="w-12 h-12 rounded-full bg-[#8E1616]/20 flex items-center justify-center mx-2 hover:bg-[#8E1616]/40 transition-colors">
+                <i data-feather="award" class="w-5 h-5 text-[#D84040]"></i>
+            </a>
+            <a href="#contact" class="w-12 h-12 rounded-full bg-[#8E1616]/20 flex items-center justify-center mx-2 hover:bg-[#8E1616]/40 transition-colors">
+                <i data-feather="mail" class="w-5 h-5 text-[#D84040]"></i>
+            </a>
+            
+        </div>
+        <p class="text-[#D84040] mb-4">May all beings be happy</p>
+        
+        <p class="text-[#EEEEEE] text-sm">© 2025 Ajit Chauhan Portfolio. All rights reserved.</p>
+    </div>
+</footer>
+    
+    <nav class="fixed bottom-8 left-0 right-0 z-50 transition-all duration-500 opacity-0 invisible" id="main-nav">
+    <div class="container mx-auto px-6">
+        <div class="max-w-xs mx-auto bg-[#222831]/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
+            <div class="flex justify-between">
+                
+                <a href="#hero" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                   text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Home">
+                   <i data-feather="home" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#projects" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                   text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Projects">
+                   <i data-feather="briefcase" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#experience" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                   text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Experience">
+                   <i data-feather="award" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#education" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                   text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Education">
+                   <i data-feather="book" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#skills" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                   text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Skills">
+                   <i data-feather="zap" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="{% url 'blog' %}" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                   text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Blog">
+                   <i data-feather="edit" class="w-5 h-5"></i>
+                </a>
+                
+                <a href="#contact" class="nav-link w-12 h-12 rounded-full flex items-center justify-center 
+                   text-[#EEEEEE] hover:text-[#FFD369] transition-colors" data-tooltip="Contact">
+                   <i data-feather="mail" class="w-5 h-5"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Your SVG content
+    const svgContent = `
+        <svg height="161px" width="161px" version="1.1" id="_x35_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-112.64 -112.64 737.28 737.28" xml:space="preserve" fill="#FF006A" stroke="#FF006A" stroke-width="0.00512">
+            <g>
+                <g>
+                    <path style="fill:#FF006A;" d="M512,187.879c0,43.958-27.738,80.831-66.268,96.256c-10.393,4.104-13.505,7.547-12.445,15.888 c0.529,4.303,0.794,8.672,0.794,13.108c0,56.867-46.076,102.943-102.943,102.943c-27.076,0-51.438-10.658-70.041-27.473 c-1.986-1.788-3.641-2.449-5.098-2.516c-1.456,0.066-3.111,0.728-5.098,2.516c-18.603,16.815-42.965,27.473-70.041,27.473 c-20.39,0-39.39-5.958-55.41-16.219c-12.578-8.01-23.303-18.735-31.313-31.313c-10.261-16.021-16.219-35.02-16.219-55.41 c0-4.435,0.265-8.805,0.794-13.108c1.06-8.341-2.052-11.784-12.445-15.888C27.738,268.711,0,231.837,0,187.879 c0-56.867,46.076-104.4,102.943-102.943c13.902,0.331,19.463,1.258,24.097-15.425C142.994,11.784,193.44-31.975,256-31.975 S369.005,11.784,384.96,69.511c4.634,16.683,10.195,15.756,24.097,15.425c19.927-0.53,38.595,5.031,54.351,14.895 c13.174,8.143,24.296,19.397,32.571,32.571C506.108,148.49,512,167.622,512,187.879z"></path>
+                    <g>
+                        <path style="fill:#FFFFFF;" d="M255.195,122.001c-12.551,0-22.725,10.173-22.725,22.725c0,9.664,6.038,17.918,14.545,21.202 v89.215c0,4.518,3.663,8.18,8.18,8.18c4.515,0,8.178-3.663,8.178-8.18v-89.215c8.507-3.284,14.545-11.535,14.545-21.202 C277.918,132.174,267.744,122.001,255.195,122.001z"></path>
+                        <path style="fill:#FFFFFF;" d="M207.197,181.434c4.743-4.163,7.741-10.268,7.741-17.078c0-12.551-10.174-22.725-22.725-22.725 c-12.549,0-22.722,10.174-22.722,22.725c0,12.426,9.973,22.515,22.35,22.713l28.278,77.031c1.557,4.24,6.254,6.413,10.494,4.859 c4.24-1.557,6.416-6.258,4.859-10.497L207.197,181.434z"></path>
+                        <path style="fill:#FFFFFF;" d="M173.004,223.059c2.585-3.691,4.108-8.177,4.108-13.025c0-12.551-10.174-22.725-22.725-22.725 c-12.551,0-22.725,10.174-22.725,22.725c0,12.548,10.174,22.722,22.725,22.722c1.734,0,3.422-0.201,5.043-0.568l33.359,49.605 c2.521,3.745,7.604,4.74,11.349,2.222c3.748-2.521,4.743-7.603,2.225-11.352L173.004,223.059z"></path>
+                        <path style="fill:#FFFFFF;" d="M357.613,187.31c-12.549,0-22.725,10.174-22.725,22.725c0,4.847,1.523,9.334,4.112,13.025 l-33.36,49.605c-2.521,3.748-1.526,8.831,2.222,11.352c3.748,2.518,8.831,1.523,11.349-2.222l33.36-49.605 c1.624,0.366,3.309,0.568,5.043,0.568c12.551,0,22.725-10.174,22.725-22.722C380.338,197.483,370.164,187.31,357.613,187.31z"></path>
+                        <path style="fill:#FFFFFF;" d="M342.509,164.355c0-12.551-10.174-22.725-22.722-22.725c-12.551,0-22.725,10.174-22.725,22.725 c0,6.81,2.998,12.915,7.744,17.078l-28.278,77.028c-1.557,4.24,0.62,8.94,4.859,10.497c4.24,1.553,8.941-0.62,10.497-4.859 l28.274-77.031C332.537,186.87,342.509,176.782,342.509,164.355z"></path>
+                    </g>
+                </g>
+                <path style="opacity:0.06;fill:#FFFFFF;" d="M463.408,99.832c-15.756-9.864-34.425-15.425-54.351-14.895 c-13.902,0.331-19.463,1.258-24.097-15.425c-0.456-1.65-1.038-3.245-1.55-4.871L88.875,359.175c1.613,3.21,3.335,6.357,5.263,9.367 c8.01,12.578,18.735,23.303,31.313,31.313c16.021,10.261,35.02,16.219,55.41,16.219c27.076,0,51.438-10.658,70.041-27.473 c1.986-1.788,3.641-2.449-5.098-2.516c1.456,0.066,3.111,0.728-5.098,2.516c18.603,16.815,42.965,27.473,70.041,27.473 c56.867,0,102.943-46.076,102.943-102.943c0-4.435-0.265-8.805-0.794-13.108c-1.059-8.341,2.052-11.784,12.445-15.888 C484.262,268.711,512,231.837,512,187.879c0-20.258-5.892-39.39-16.021-55.477C487.704,119.229,476.582,107.974,463.408,99.832z"></path>
+            </g>
+        </svg>
+    `;
+
+    // Encode the SVG content to a Base64 Data URI
+    const encodedSvg = 'data:image/svg+xml;base64,' + btoa(svgContent);
+
+    // 🔑 HASH MAP / CACHE: Store which configs have already been loaded
+    const particleCache = {};
+    let currentParticleConfig = null;
+    // --- 1. Define Particle Configurations for all 7 Sections (With Background Colors) ---
+    const particleConfigs = {
+        // ... (Existing configs: hero, projects, experience, education, skills, blog, contact)
+
+        // 8. NEW: Custom SVG Particle Config
+        
+        // 1. HERO: Amber Stars/Lines (Connecting the start)
+       "hero": {
+    bgColor: "#FBF6EE", /* New Cream Background */
+    "particles": {
+        "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+        "color": { "value": "#FFB534" }, // Primary Yellow Accent
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.6, "random": false },
+        "size": { "value": 3, "random": true },
+        "line_linked": { "enable": true, "distance": 150, "color": "#FFB534", "opacity": 0.5, "width": 1 },
+        "move": { "enable": true, "speed": 6, "direction": "none", "random": false }
+    },
+    "interactivity": { "detect_on": "window", 
+    "events": { "onhover": { "enable": true, "mode": "repulse" } }, 
+    "modes": { "repulse": { "distance": 100, "duration": 0.4 } }, 
+    "retina_detect": true }
+},
+
+        // 2. PROJECTS: Amber Connecting Network (Linked Work/Goals)
+       "projects": {
+            bgColor: "#ffffffcc", 
+            "particles": {
+                "number": { "value": 40, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#FF006A" }, 
+                "shape": { "type": "image", "image": { "src": encodedSvg, "width": 737, "height": 737 } },
+                "opacity": { "value": 0.8, "random": true, "anim": { "enable": true, "speed": 1 } },
+                "size": { "value": 15, "random": true, "anim": { "enable": true, "speed": 1 } },
+                "line_linked": { "enable": true, "distance": 70, "color": "#FF69B4", "opacity": 0.6, "width": 1, "shadow": { "enable": true, "color": "#FF69B4", "blur": 5 } },
+                "move": { 
+                    "enable": true, 
+                    "speed": 2, 
+                    "direction": "right", 
+                    "random": true, 
+                    "straight": false, 
+                    "out_mode": "none", 
+                    "attract": { "enable": true, "rotateX": 600, "rotateY": 1200 } 
+                }
+            },
+            "retina_detect": true
+        },
+        
+
+        // 3. EXPERIENCE: Green Code Flow (Timeline/Progression)
+        "experience": {
+    // bgColor: "#000000", /* Original Pure Black */
+    bgColor: "#112D4E", /* New Deep Blue Background */
+    "particles": {
+        "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+        "color": { "value": "#F9F7F7" }, // New Near-White Particle Color
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.6, "random": true },
+        "size": { "value": 2.5, "random": false },
+        "line_linked": { "enable": true },
+        "move": { "enable": true, "speed": 3, "direction": "bottom", "random": true, "straight": true }
+    },
+    "interactivity": { "detect_on": "window", "events": { "onhover": { "enable": true, "mode": "repulse" } }, "modes": { "repulse": { "distance": 50, "duration": 0.4 } }, "retina_detect": true }
+},
+        // 4. EDUCATION: Rising Knowledge Bubbles (Upward Blue Flow)
+       "education": {
+    bgColor: "#252A34", /* New Dark Background */
+    "particles": {
+        "number": { "value": 70, "density": { "enable": true, "value_area": 800 } },
+        "color": { "value": "#08D9D6" }, // New Vibrant Cyan Particle Color
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.5, "random": true },
+        "size": { "value": 5.5, "random": true },
+        "line_linked": { "enable": true, "distance": 170, "color": "#08D9D6", "opacity": 0.2, "width": 1.5 },
+        "move": { "enable": true, "speed": 1.2, "direction": "top", "random": true, "straight": false }
+    },
+    "interactivity": { "detect_on": "window", "events": { "onhover": { "enable": true, "mode": "attract" } }, "modes": { "attract": { "distance": 150, "duration": 0.8, "speed": 1 } }, "retina_detect": true }
+},
+
+        // 5. SKILLS: Dense Connecting Dots (Knowledge Graph)
+        "skills": {
+            bgColor: "#0f172a", /* Slate-900 */
+            "particles": {
+                "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#fbbf24" },
+                "shape": { "type": "circle" },
+                "size": { "value": 2, "random": true },
+                "line_linked": { "enable": true, "distance": 120, "color": "#f59e0b", "opacity": 0.4, "width": 1 },
+                "move": { "enable": true, "speed": 1, "direction": "none", "random": true }
+            },
+            "interactivity": { "detect_on": "window", "events": { "onhover": { "enable": true, "mode": "attract" } }, "modes": { "attract": { "distance": 200, "duration": 0.5, "speed": 1 } }, "retina_detect": true }
+        },
+        
+        // 6. BLOG: Fast, Chaotic Movement
+        "blog": {
+    bgColor: "#252525", /* New Primary Dark Background */
+    "particles": {
+        "number": { "value": 60, "density": { "enable": true, "value_area": 800 } },
+        "color": { "value": "#FF0000" }, // New Pure Red Particle Color
+        "shape": { "type": "circle" },
+        "size": { "value": 2, "random": true },
+        "line_linked": { "enable": false },
+        "move": { "enable": true, "speed": 8, "direction": "random", "random": true, "straight": false }
+    },
+    "interactivity": { "detect_on": "window", "events": { "onhover": { "enable": true, "mode": "push" } }, "modes": { "push": { "particles_nb": 4 } }, "retina_detect": true }
+},
+
+        // 7. CONTACT: Calm, floating spheres
+        "contact": {
+    bgColor: "#F9F9F9", /* New Light Background */
+    "particles": {
+        "number": { "value": 40, "density": { "enable": true, "value_area": 800 } },
+        "color": { "value": "#BEAEE2" }, /* Soft Lavender Particle Color */
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.5, "random": true },
+        "size": { "value": 5, "random": true },
+        "line_linked": { "enable": false },
+        "move": { "enable": true, "speed": 1, "direction": "top", "random": true, "straight": true }
+    },
+    "interactivity": { "detect_on": "window", "events": { "onhover": { "enable": true, "mode": "slow" } }, "modes": { "slow": { "radius": 10 } }, "retina_detect": true }
+}
+    };
+
+
+    function loadParticlesConfig(configName) {
+        const configData = particleConfigs[configName] || particleConfigs.hero;
+        const particleJsContainer = 'particles-js';
+        
+        // Change Body Background Color Smoothly
+        if (configData.bgColor) {
+            document.body.style.transition = 'background-color 1.0s ease';
+            document.body.style.backgroundColor = configData.bgColor;
+        }
+
+        // 🛑 CRITICAL FIX: Only re-initialize if the configuration is different AND 
+        // it has NOT been loaded before OR if the config is one that doesn't need caching (e.g., simple ones)
+        
+        if (configName !== currentParticleConfig) {
+            
+            // Check the cache (Hash Map) first!
+            if (particleCache[configName]) {
+                // If the configuration is cached, we don't need to re-initialize the heavy assets.
+                // particles.js might already be running, but we mark it as "loaded"
+                console.log(`Particles for ${configName} already cached. Skipping re-initialization.`);
+            } else {
+                // Not cached. Run the expensive function.
+                window.particlesJS(particleJsContainer, configData); 
+                
+                // Cache the configuration to prevent re-loading on subsequent scrolls
+                // NOTE: We cache the *fact* that it was loaded, preventing the call to particlesJS again.
+                particleCache[configName] = true;
+            }
+            
+            currentParticleConfig = configName;
+        }
+        
+        // After loading the new config, you might need to ensure the canvas is visible/on top, 
+        // but particles.js usually handles this by replacing the canvas entirely.
+    }
+    
+    // --- Main Execution Block ---
+    document.addEventListener('DOMContentLoaded', function() {
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    // 1. Set initial state: opacity 0 and slightly offset for h1, p, and photo
+    gsap.set(["h1", "p.text-xl", "#ajit-photo", "#explore-btn", "#resume-btn", "#scroll-indicator"], { opacity: 0, y: 30 });
+    
+    // Set display: flex for the buttons at the very start so opacity can control them
+    gsap.set(["#explore-btn", "#resume-btn"], { display: 'inline-flex' });
+    gsap.set("#scroll-indicator", { display: 'block' });
+
+    // 2. Animate elements sequentially
+    tl.to(".fix-flicker", { opacity: 1, duration: 0.1 }, 0) 
+        // We removed the original .to that set opacity/display to 0/none, 
+        // as the initial gsap.set takes care of opacity: 0.
+
+        .to("h1", { opacity: 1, y: 0, duration: 0.8 }, 0.5) 
+        .to("p.text-xl", { opacity: 1, y: 0, duration: 0.8 }, "-=0.5") 
+        .fromTo("#ajit-photo", 
+            { opacity: 0, scale: 0.8, y: 30 }, // Also include y: 30 for consistency
+            { opacity: 1, scale: 1, y: 0, duration: 1.2, ease: "elastic.out(1, 0.5)" }, 
+            "-=0.5" 
+        )
+        // Animate buttons to opacity 1, using 'inline-flex' which was set with gsap.set
+        .to("#explore-btn", { opacity: 1, y: 0, duration: 0.5 }, "-=0.8")
+        .to("#resume-btn", { opacity: 1, y: 0, duration: 0.5 }, "-=0.4")
+        .to("#scroll-indicator", { opacity: 1, y: 0, duration: 0.5 }, ">");
+
+        loadParticlesConfig('hero'); 
+
+        // Apply pointer-events: none for clicks to pass through the canvas
+        const particlesCanvas = document.querySelector('#particles-js canvas');
+        if (particlesCanvas) {
+            particlesCanvas.style.pointerEvents = 'none';
+        }
+
+        // 2. GSAP ANIMATION LOGIC (Omitted for brevity, assumed correct)
+        
+        // 3. SCROLL LISTENER AND PARTICLE SWAPPING (No functional change needed here)
+        window.addEventListener('scroll', function() {
+    
+    const hero = document.getElementById('hero');
+    const nav = document.getElementById('main-nav');
+    
+    // --- Navigation Visibility Logic (THE FIX) ---
+    if (nav && hero) { 
+        const heroHeight = hero.offsetHeight;
+        // Show the nav bar after scrolling 80% past the hero section
+        if (window.scrollY > heroHeight * 0.8) {
+            // Fade in: remove invisible, set opacity to 100
+            nav.classList.remove('invisible', 'opacity-0');
+            nav.classList.add('opacity-100');
+        } else {
+            // Fade out: set opacity to 0, add invisible to truly hide it for screen readers/clicks
+            nav.classList.add('invisible', 'opacity-0');
+            nav.classList.remove('opacity-100');
+        }
+    }
+    // ---------------------------------------------
+    
+    const sections = document.querySelectorAll('.section');
+    let visibleSectionId = 'hero'; 
+    
+    sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        
+        if (rect.top <= window.innerHeight * 0.5 && rect.bottom >= window.innerHeight * 0.5) {
+            section.classList.add('active');
+            visibleSectionId = section.id;
+        } else {
+            section.classList.remove('active');
+        }
+    });
+    
+    // This call is now protected by the cache
+    loadParticlesConfig(visibleSectionId);
+});
+
+        // 4. Smooth scroll and Feather Icons (Omitted for brevity, assumed correct)
+        feather.replace();
+    });
+</script>
+</body>
+</html>

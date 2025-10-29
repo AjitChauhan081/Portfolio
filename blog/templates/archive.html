@@ -1,0 +1,50 @@
+{% extends 'master.html' %}
+
+{% block main %}
+
+<article class="bg-[#EFFFFB] p-6 md:p-10 lg:p-12 rounded-xl">
+
+    <header class="post-header mb-8">
+        <h1 class="post-title text-4xl font-extrabold text-[#272727] text-center">
+            Archives
+        </h1>
+    </header>
+
+    <div class="post-content">
+        <div class="archives max-w-3xl mx-auto">
+            
+            {% if archive_list %}
+                
+                {% for year, posts_in_year in archive_list %}
+                    
+                    <h2 class="year text-3xl font-bold text-[#272727] mt-8 mb-4 border-b-2 border-[#4F98CA] pb-1">
+                        {{ year }}
+                    </h2>
+                    
+                    <ul class="list-disc list-inside space-y-2 pl-4">
+                        {% for post in posts_in_year %}
+                        <li class="group text-[#272727]">
+                            <a href="{{ post.get_absolute_url }}" 
+                               class="text-lg text-[#50D890] hover:text-[#4F98CA] transition-colors duration-200 font-medium">
+                                {{ post.title }} 
+                            </a>
+                            
+                            <span class="text-sm text-[#4F98CA] ml-2">
+                                ({{ post.date|date:"M d" }})
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                {% endfor %}
+                
+            {% else %}
+                <p class="text-center text-[#272727] mt-10">No blog posts have been published yet.</p>
+            {% endif %}
+
+        </div>
+    </div>
+    
+</article>
+
+{% endblock %}
