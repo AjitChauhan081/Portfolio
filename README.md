@@ -94,4 +94,25 @@ Note: For testing deployment behavior, remember to set DEBUG = False in settings
 
 ---
 
-<table border="1" cellpadding="10" cellspacing="0" style="width: 100%;"> <thead> <tr> <th style="background-color: #e6f7ff; width: 30%;">Change Category</th> <th style="background-color: #e6f7ff;">Implementation Details</th> </tr> </thead> <tbody> <tr> <td><strong>Search Engine Optimization (SEO)</strong></td> <td>Integrated <code>sitemap.xml</code> (Deployed URL) and configured <code>robots.txt</code> for better indexing.</td> </tr> <tr> <td><strong>Email Service Integration</strong></td> <td>Added SMTP Gmail service for reliable email functionality (e.g., contact forms).</td> </tr> <tr> <td><strong>Performance Optimization</strong></td> <td>Significant refactoring of templates and static files to improve site speed. Detailed information on techniques and results can be found in the <a href="./PERFORMANCE_OPTIMIZATION.md">PERFORMANCE_OPTIMIZATION.md</a> file.</td> </tr> </tbody> </table>
+<table border="1" cellpadding="10" cellspacing="0" style="width: 100%;">
+<thead>
+<tr>
+<th style="background-color: #e6f7ff; width: 30%;">Change Category</th>
+<th style="background-color: #e6f7ff;">Implementation Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Search Engine Optimization (SEO)</strong></td>
+<td>Integrated <a href="https://ajitchauhan31.pythonanywhere.com/sitemap.xml"><code>sitemap.xml</code></a> (Deployed URL) and configured <code>robots.txt</code> for better indexing.</td>
+</tr>
+<tr>
+<td><strong>Email Service Integration</strong></td>
+<td>Added SMTP Gmail service for reliable email functionality (e.g., contact forms).</td>
+</tr>
+<tr>
+<td><strong>Performance Optimization</strong></td>
+<td>Significant refactoring of templates and static files to improve site speed. Detailed information on techniques and results can be found in the <a href="./PERFORMANCE_OPTIMIZATION.md">PERFORMANCE_OPTIMIZATION.md</a> file.</td>
+</tr>
+</tbody>
+</table>
