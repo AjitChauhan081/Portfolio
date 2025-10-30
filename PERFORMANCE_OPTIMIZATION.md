@@ -32,6 +32,7 @@
 
 * **Image Optimization:**
     * **Lazy Loading:** Implemented native lazy loading for images to prioritize above-the-fold content.
+    * **Use Django Stactic file hashing:** Implemented Django Static File Cashing library to incress the performance.
     * **Size Compression:** Compressed unnecessarily large images (some initially $>5\text{MB}$) to reduce payload.
     * **Format Change:** Converted existing **PNG** images to **WebP** format for better compression and superior performance.
 * **Asset Loading:** Used the **`defer`** attribute for JavaScript files to prevent blocking of the initial page render.
