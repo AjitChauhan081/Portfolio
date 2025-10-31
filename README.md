@@ -8,6 +8,18 @@
 
 ---
 
+## 🏗️ Project Architecture
+
+---
+
+This Django project is organized into two distinct applications to maintain a clean separation of concerns:
+
+<a href="./main">**Main**</a> App: Contains the full portfolio landing page, including all static content, contact forms, and the core presentation logic.
+
+<a href="./blog">**Blog**</a> App: Houses the complete blog functionality, including its own dedicated models, views, and templates for post creation, display, and management.
+
+---
+
 ### 🛠️ Local Setup and Installation
 
 ---
